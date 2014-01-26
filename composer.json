@@ -1,7 +1,7 @@
 {
     "name": "weixin/weixin",
     "type": "library",
-    "description": "A PHP client library for weixin",
+    "description": "A simple PHP client library for weixin",
     "keywords": ["weixin"],
     "homepage": "http://github.com/handsomegyr/weixin",
     "license": "MIT",
