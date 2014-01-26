@@ -3,6 +3,7 @@ namespace Weixin\MediaManager;
 use Weixin\Helpers;
 use Weixin\WeixinException;
 use Weixin\WeixinClient;
+use Weixin\WeixinOAuthRequest;
 
 /**
  * 上传下载多媒体文件接口
@@ -98,30 +99,18 @@ class WeixinMediaManager
 		$params = array();
 		$params['access_token'] = $access_token;
 		$params['media_id'] = $media_id;
-		//$response = $this->weixin->doGet($this->_url.'get',$params);
 		$url = $this->_url.'get';
-		$client = new Zend_Http_Client();
-		$client->setUri($url);
-		$client->setParameterGet($params);
-		$client->setConfig(array('maxredirects'=>3,'timeout'=> 300));
-		$response = $client->request('GET');
-		if($response->isError())
-			throw new WeixinException($url.', $response is error！');
-		$content = $response->getBody();
-
+		//获取oAuthRequest对象
+        $weixinOAuthRequest = new WeixinOAuthRequest();
+        $weixinOAuthRequest->decode_json = false;
+        $content = $weixinOAuthRequest->get($url,$params);
 		if(Helpers::isJson($content)){
 			$rst = json_decode($content,true);
 		}else{
 			$rst = array();
 			$rst['content'] =base64_encode($content);
-			//获取文件名字
-			$contentDisposition =$response->getHeader("Content-disposition");
-			$pattern = '/filename="(.+)"/';//'filename="?(.+)"?'
-			if(preg_match($pattern, $contentDisposition, $matches))
-			{
-				$rst['fileName'] =$matches[1];
-			}
 		}
+		
 		//返回说明
 		if(!empty($rst['errcode']))
 		{
