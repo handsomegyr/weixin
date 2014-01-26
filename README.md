@@ -67,6 +67,5 @@ try {
 	echo($e->getMessage());
 }
 ```
-事例代码如下所示
 
 
