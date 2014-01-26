@@ -15,7 +15,7 @@ class Helpers
      * @return true/false
      *
      */
-    public public function isJson ($string) {
+    public function isJson ($string) {
     	if(strpos($string, "{")!==false) {
     		json_decode($string);
     		return (json_last_error() == JSON_ERROR_NONE);
