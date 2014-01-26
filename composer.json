@@ -1,5 +1,5 @@
 {
-    "name": "handsomegyr/weixin",
+    "name": "weixin/weixin",
     "type": "library",
     "description": "A PHP client library for weixin",
     "keywords": ["weixin"],
