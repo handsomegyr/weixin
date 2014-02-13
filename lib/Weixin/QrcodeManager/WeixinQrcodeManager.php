@@ -52,7 +52,7 @@ class WeixinQrcodeManager
 		//expire_seconds	 该二维码有效时间，以秒为单位。 最大不超过1800。
 		//action_name	 二维码类型，QR_SCENE为临时,QR_LIMIT_SCENE为永久
 		//action_info	 二维码详细信息
-		//scene_id	 场景值ID，临时二维码时为32位整型，永久二维码时最大值为1000
+		//scene_id	 场景值ID，临时二维码时为32位整型，永久二维码时最大值为100000
 		$params = array();
 		if($isTemporary){
 			$params['expire_seconds'] = min($expire_seconds,1800);
@@ -60,7 +60,7 @@ class WeixinQrcodeManager
 			$params['action_info']['scene']['scene_id'] = $scene_id;
 		}else{
 			$params['action_name'] = "QR_LIMIT_SCENE";
-			$params['action_info']['scene']['scene_id'] = min($scene_id,1000);
+			$params['action_info']['scene']['scene_id'] = min($scene_id,100000);
 		}
 		$json = json_encode($params,JSON_UNESCAPED_UNICODE);
 		$rst = $this->weixin->post($this->_url.'create?access_token='.$access_token, $json);
