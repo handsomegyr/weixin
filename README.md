@@ -63,6 +63,17 @@ try {
 	print_r($userinfo);
 	echo "<br/>";
 	
+	//生成ticket
+	$scene_id =1;
+	$ticketInfo = $client->getWeixinQrcodeManager()->create($scene_id,false);
+	print_r($ticketInfo);
+	echo "<br/>";
+
+	//获取ticket
+	$ticket = urlencode($ticketInfo['ticket']);
+	$url = $client->getWeixinQrcodeManager()->getQrcodeUrl($ticket);
+	echo $url;
+	echo "<br/>";
 } catch (Exception $e) {
 	echo($e->getMessage());
 }
