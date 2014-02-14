@@ -1,7 +1,7 @@
-weixin
+н╒пе(Weixin)
 ======
 
-is a PHP (>= 5.3) client library for the Weixin
+is a PHP (>= 5.3) client library for the н╒пе(Weixin)
 
 ### Loading the library ###
 
