@@ -9,6 +9,7 @@ use Weixin\MediaManager\WeixinMediaManager;
 use Weixin\MenuManager\WeixinMenuManager;
 use Weixin\QrcodeManager\WeixinQrcodeManager;
 use Weixin\UserManager\WeixinUserManager;
+use Weixin\PayManager\WeixinPayManager;
 
 /**
  * 微信公众平台的调用接口类.
@@ -18,7 +19,17 @@ use Weixin\UserManager\WeixinUserManager;
 class WeixinClient
 {   
 	private $_appid = null;
+	public function getAppid()
+	{
+		return $this->_appid;
+	}
+	
 	private $_secret = null;
+	public function getAppSecret()
+	{
+		return $this->_secret;
+	}
+	
 	private $_access_token = null;
 	private $_refresh_token = null;
 	private $_url = 'https://api.weixin.qq.com/cgi-bin/';
@@ -88,8 +99,19 @@ class WeixinClient
     {
     	return $this->weixinMediaManager;
     }
+
+    protected $weixinPayManager;
+    /**
+     * GET WeixinPayManager object.
+     *
+     * @return WeixinPayManager
+     */
+    public function getWeixinPayManager()
+    {
+    	return $this->weixinPayManager;
+    }
     
-    public function __construct($appid,$secret,$access_token = NULL,$refresh_token = NULL) {
+    public function __construct($appid,$secret,$access_token = NULL,$refresh_token = NULL,$options=array()) {
         $this->_appid = $appid;
         $this->_secret = $secret;
         $this->_access_token = $access_token;
@@ -98,18 +120,19 @@ class WeixinClient
         //获取oAuthRequest对象
         $this->weixinOAuthRequest = new WeixinOAuthRequest();
         //发送消息管理
-        $this->weixinMsgManager = new WeixinMsgManager($this);
+        $this->weixinMsgManager = new WeixinMsgManager($this,$options);
         //用户管理
-        $this->weixinUserManager = new WeixinUserManager($this);
+        $this->weixinUserManager = new WeixinUserManager($this,$options);
         //推广支持
-        $this->weixinQrcodeManager = new WeixinQrcodeManager($this);
+        $this->weixinQrcodeManager = new WeixinQrcodeManager($this,$options);
         //自定义菜单
-        $this->weixinMenuManager = new WeixinMenuManager($this);
+        $this->weixinMenuManager = new WeixinMenuManager($this,$options);
         //分组管理
-        $this->weixinGroupsManager = new WeixinGroupsManager($this);
+        $this->weixinGroupsManager = new WeixinGroupsManager($this,$options);
         //上传下载多媒体文件管理
-        $this->weixinMediaManager = new WeixinMediaManager($this);
-        
+        $this->weixinMediaManager = new WeixinMediaManager($this,$options);
+        //微信支付管理
+        $this->weixinPayManager = new WeixinPayManager($this,$options);
     }
 	
     /**

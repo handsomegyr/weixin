@@ -20,7 +20,7 @@ class WeixinMediaManager
 	protected $weixin;
 	private $_url = 'http://file.api.weixin.qq.com/cgi-bin/media/';
 
-	public function __construct(WeixinClient $weixin) {
+	public function __construct(WeixinClient $weixin,$options=array()) {
 		$this->weixin  = $weixin;
 	}
 

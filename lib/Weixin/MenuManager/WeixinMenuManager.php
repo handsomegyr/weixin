@@ -15,7 +15,7 @@ class WeixinMenuManager
 	protected $weixin;
 	private $_url = 'https://api.weixin.qq.com/cgi-bin/menu/';
 
-	public function __construct(WeixinClient $weixin) {
+	public function __construct(WeixinClient $weixin,$options=array()) {
 		$this->weixin  = $weixin;
 	}
 

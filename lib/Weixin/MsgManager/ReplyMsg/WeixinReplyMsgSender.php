@@ -29,7 +29,7 @@ class WeixinReplyMsgSender
 	/**
 	 * @param WeixinMsgManager $weixinMsgManager Connection factory object.
 	 */
-	public function __construct(WeixinMsgManager $weixinMsgManager) {
+	public function __construct(WeixinMsgManager $weixinMsgManager,$options=array()) {
 		$this->weixinMsgManager = $weixinMsgManager;
 	}
 	

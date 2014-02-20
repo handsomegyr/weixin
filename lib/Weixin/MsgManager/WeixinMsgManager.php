@@ -52,12 +52,12 @@ class WeixinMsgManager
 		return $this->weixinCustomMsgSender;
 	}
 
-	public function __construct(WeixinClient $weixin) {
+	public function __construct(WeixinClient $weixin,$options=array()) {
 		$this->weixin = $weixin;
 		//发送被动响应消息发射器
-		$this->weixinReplyMsgSender = new WeixinReplyMsgSender($this);
+		$this->weixinReplyMsgSender = new WeixinReplyMsgSender($this,$options);
 		//发送客服消息发射器
-		$this->weixinCustomMsgSender = new WeixinCustomMsgSender($this);
+		$this->weixinCustomMsgSender = new WeixinCustomMsgSender($this,$options);
 	}
 
 }

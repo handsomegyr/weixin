@@ -16,7 +16,7 @@ class WeixinGroupsManager
 	protected  $weixin;
 	private $_url = 'https://api.weixin.qq.com/cgi-bin/groups/';
 
-	public function __construct(WeixinClient $weixin) {
+	public function __construct(WeixinClient $weixin,$options=array()) {
 		$this->weixin    = $weixin;
 	}
 

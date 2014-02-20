@@ -39,7 +39,7 @@ class WeixinSnsUserManager
 {
 	protected $weixin;
 
-	public function __construct(WeixinSnsClient $weixin) {
+	public function __construct(WeixinSnsClient $weixin,$options=array()) {
 		$this->weixin  = $weixin;
 	}
 
