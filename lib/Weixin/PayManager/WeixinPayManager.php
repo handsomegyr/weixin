@@ -166,7 +166,7 @@ class WeixinPayManager
 		
 		//获取package
 		$para =array("out_trade_no"=>$out_trade_no,"partner"=>$this->partnerId);
-		$package = $this->getPackage($para);	
+		$package = $this->createPackage($para);	
 		$postData["package"]=$package;
 		
 		$postData["timestamp"]=time();
@@ -245,9 +245,103 @@ class WeixinPayManager
 	}
 	
 	/*
+	 * 获取Native（原生）支付URL定义
+	 */
+	public function getNativePayUrl($productid,$noncestr)
+	{
+		//Native（原生）支付URL 是一系列具有weixin://wxpay/bizpayurl?前缀的url，同时后面
+		//紧跟着一系列辨别商家的键值对。Native（原生）支付URL 的规则如下：
+		//weixin://wxpay/bizpayurl?sign=XXXXX&appid=XXXXXX&productid=XXXXXX&timestamp=XXXXXX&noncestr=XXXXXX
+		//其中xxxxxx 为商户需要填写的内容，具体参数定义如下：
+		//参数 			必填 		说明
+		//appid 			是			字段名称：公众号id；
+		//									字段来源：商户注册具有支付权限的公众号成功后即可获得；
+		//									传入方式：由商户直接传入。
+		//timestamp 	是			字段名称：时间戳；
+		//									字段来源：商户生成从1970 年1 月1 日00：00：00 至今的秒数，即当前的时间；
+		//									由商户生成后传入。取值范围：32 字符以下
+		//noncestr 		是			字段名称：随机字符串；
+		//									字段来源：商户生成的随机字符串；取值范围：长度为32 个字符以下。
+		//									由商户生成后传入。取值范围：32 字符以下
+		//productid 		是			字段名称：商品唯一id；
+		//									字段来源：商户需要定义并维护自己的商品id，这个id 与一张订单等价，
+		//									微信后台凭借该id 通过Post商户后台获取交易必须信息。由商户生成后传入。取值范围：32字符以下
+		//sign 				是			字段名称：签名；
+		//									字段来源：对前面的其他字段与appKey 按照字典序排序后，使用SHA1 算法得到的结果。由商户生成后传入。
+		//参与sign 签名的字段包括：appid、timestamp、noncestr、productid 以及appkey
+		$appid=$this->weixin->getAppid();
+		$para =array(
+				"appid"=>$appid,
+				"appkey"=>$this->paySignKey,
+				"timestamp"=>time(),
+				"noncestr"=>$noncestr,
+				"productid"=>$productid);
+		$sign=$this->getPaySign($para);
+		return "weixin://wxpay/bizpayurl?sign={$sign}&appid={$appid}&productid={$productid}&timestamp={$timestamp}&noncestr={$noncestr}";
+	}
+	
+	/*
+	 * Native（原生）支付回调商户后台获取package
+	 * 在公众平台接到用户点击上述特殊Native（原生）支付的URL 之后，会调用注册时填写的商家获取订单Package 的回调URL。
+	 * 假设回调URL 为https://www.outdomain.com/cgi-bin/bizpaygetpackage
+	*/
+	public function getPackageForNativeUrl($body,$attach,$out_trade_no,
+			$total_fee,$notify_url,$spbill_create_ip,$time_start,$time_expire,
+			$transport_fee,$product_fee,$goods_tag,$noncestr,
+			$bank_type="WX",$fee_type=1,$input_charset="GBK",
+			$retcode=0,$reterrmsg="ok")
+	{
+		//为了返回Package 数据，回调URL 必须返回一个xml 格式的返回数据，形如：
+		//<xml>
+		//	<AppId><![CDATA[wwwwb4f85f3a797777]]></AppId>
+		//	<Package><![CDATA[a=1&url=http%3A%2F%2Fwww.qq.com]]></Package>
+		//	<TimeStamp> 1369745073</TimeStamp>
+		//	<NonceStr><![CDATA[iuytxA0cH6PyTAVISB28]]></NonceStr>
+		//	<RetCode>0</RetCode>
+		//	<RetErrMsg><![CDATA[ok]]></ RetErrMsg>
+		//	<AppSignature><![CDATA[53cca9d47b883bd4a5c85a9300df3da0cb48565c]]>
+		//	</AppSignature>
+		//	<SignMethod><![CDATA[sha1]]></ SignMethod >
+		//</xml>
+		//其中，AppSignature 依然是根据前文paySign 所讲的签名方式生成的签名，
+		//参与签名的字段为：appid、appkey、package、timestamp、noncestr、retcode、reterrmsg。
+		//package 的生成规则请参考JS API 所定义的package 生成规则。这里就不再赘述了。
+		//其中，对于一些第三方觉得商品已经过期或者其他错误的情况，可以在RetCode 和
+		//RetErrMsg 中体现出来，RetCode 为0 表明正确，可以定义其他错误；当定义其他错误时，
+		//可以在RetErrMsg 中填上UTF8 编码的错误提示信息，比如“该商品已经下架”，客户端会直接提示出来。
+		$appid=$this->weixin->getAppid();
+		$timestamp = time();
+		//获取package
+		$package = $this->getPackage4JsPay($body,$attach,$out_trade_no,
+			$total_fee,$notify_url,$spbill_create_ip,$time_start,$time_expire,
+			$transport_fee,$product_fee,$goods_tag,$bank_type,$fee_type,$input_charset);
+		//获取app_signature
+		$para =array(
+				"appid"=>$appid,
+				"appkey"=>$this->paySignKey,
+				"package"=>$package,
+				"timestamp"=>$timestamp,
+				"noncestr"=>$noncestr,
+				"retcode"=>$retcode,
+				"reterrmsg"=>$reterrmsg);
+		$AppSignature=$this->getPaySign($para);
+		return 
+		"<xml>
+			<AppId><![CDATA[{$appid}]]></AppId>
+			<Package><![CDATA[{$package}]]></Package>
+			<TimeStamp>{$timestamp}</TimeStamp>
+			<NonceStr><![CDATA[{$noncestr}]]></NonceStr>
+			<RetCode>{$retcode}</RetCode>
+			<RetErrMsg><![CDATA[{$reterrmsg}]]></ RetErrMsg>
+			<AppSignature><![CDATA[{$AppSignature}]]></AppSignature>
+			<SignMethod><![CDATA[sha1]]></ SignMethod >
+		</xml>";
+	}
+	
+	/*
 	 * package 生成方法
 	*/
-	protected function getPackage(array $para)
+	protected function createPackage(array $para)
 	{
 		if(empty($this->partnerKey)){
 			throw new Exception('partnerKey is empty');
@@ -308,5 +402,62 @@ class WeixinPayManager
 		//具体签名算法为paySign =SHA1(string1)。
 		$paySign=sha1($string1);
 		return $paySign;
+	}
+	
+	/*
+	 * 获取JS API 时所需的订单详情（package）
+	 * 在商户调起JS API 时，商户需要此时确定该笔订单详情，并将该订单详情通过一定的
+		方式进行组合放入package。JS API 调用后，微信将通过package 的内容生成预支付单。下
+		面将定义package 的所需字段列表以及签名方法。
+	 */
+	protected function getPackage4JsPay($body,$attach,$out_trade_no,
+			$total_fee,$notify_url,$spbill_create_ip,$time_start,$time_expire,
+			$transport_fee,$product_fee,$goods_tag,$bank_type="WX",$fee_type=1,$input_charset="GBK")
+	{
+		//package 所需字段列表
+		//参数 						必填 		说明
+		//bank_type 				是			银行通道类型，由于这里是使用的微信公众号支付，
+		//											因此这个字段固定为WX，注意大写。参数取值："WX"。
+		//body 						是			商品描述。参数长度：128 字节以下。
+		//attach 					否			附加数据，原样返回。128 字节以下。
+		//partner 					是			商户号,即注册时分配的partnerId。
+		//out_trade_no 			是			商户系统内部的订单号,32 个字符内、
+		//											可包含字母,确保在商户系统唯一。参数取值范围：32 字节以下。
+		//total_fee 				是			订单总金额，单位为分。
+		//fee_type 				是			现金支付币种,取值：1（人民币）,默认值是1，暂只支持1。
+		//notify_url 				是			通知URL,在支付完成后,接收微信通知支付结果的URL,
+		//											需给绝对路径,255 字符内, 格式如:http://wap.tenpay.com/tenpay.asp。取值范围：255 字节以内。
+		//spbill_create_ip 		是			订单生成的机器IP，指用户浏览器端IP，
+		//											不是商户服务器IP，格式为IPV4 整型。取值范围：15 字节以内。
+		//time_start 				否			交易起始时间， 也是订单生成时间， 格式为yyyyMMddHHmmss，
+		//											如2009 年12 月25 日9 点10 分10秒表示为20091225091010。时区为GMT+8 beijing。
+		//											该时间取自商户服务器。取值范围：14 字节。
+		//time_expire 			否			交易结束时间， 也是订单失效时间， 格式为yyyyMMddHHmmss，
+		//											如2009 年12 月27 日9 点10 分10秒表示为20091227091010。时区为GMT+8 beijing。
+		//											该时间取自商户服务器。取值范围：14 字节。
+		//transport_fee 		否			物流费用，单位为分。如果有值，必须保证transport_fee +product_fee=total_fee。
+		//product_fee 			否			商品费用，单位为分。如果有值，必须保证transport_fee +product_fee=total_fee。
+		//goods_tag 				否			商品标记，优惠券时可能用到。
+		//input_charset 		是			传入参数字符编码。取值范围："GBK"、"UTF-8"。默认："GBK"
+		//获取package
+		$para =array(
+			"bank_type"=>$bank_type,
+			"body"=>$body,
+			"attach"=>$attach,
+			"partner"=>$this->partnerId,
+			"out_trade_no"=>$out_trade_no,
+			"total_fee"=>$total_fee,
+			"fee_type"=>$fee_type,
+			"notify_url"=>$notify_url,
+			"spbill_create_ip"=>$spbill_create_ip,
+			"time_start"=>$time_start,
+			"time_expire"=>$time_expire,
+			"transport_fee"=>$transport_fee,
+			"product_fee"=>$product_fee,
+			"goods_tag"=>$goods_tag,
+			"input_charset"=>$input_charset
+		);
+		$package = $this->createPackage($para);	
+		return $package;
 	}
 }
