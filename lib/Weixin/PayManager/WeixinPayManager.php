@@ -382,23 +382,10 @@ class WeixinPayManager {
 	 * @return string
 	 */
 	public function createPackage(array $para) {
-		if (empty ( $this->partnerKey )) {
-			throw new Exception ( 'partnerKey is empty' );
-		}
 		// 由于package 中携带了生成订单的详细信息，因此在微信将对package 里面的内容进行鉴权，
-		// 确定package 携带的信息是真实、有效、合理的。因此，这里将定义生成package 字符串的方法。
-		// a.对所有传入参数按照字段名的ASCII 码从小到大排序（字典序）后，
-		// 使用URL 键值对的格式（即key1=value1&key2=value2…）拼接成字符串string1；
-		// 除去数组中的空值和签名参数
-		$paraFilter = Helper::paraFilter ( $para );
-		// 对数组排序
-		$paraFilter = Helper::argSort ( $paraFilter );
-		$string1 = implode ( '&', $paraFilter );
-		
-		// b. 在string1 最后拼接上key=paternerKey 得到stringSignTemp 字符串，
-		// 并对stringSignTemp 进行md5 运算，再将得到的字符串所有字符转换为大写，得到sign 值signValue。
-		$sign = string1 . '&key=' . $this->partnerKey;
-		$sign = strtoupper ( md5 ( $sign ) );
+		// 确定package 携带的信息是真实、有效、合理的。因此，这里将定义生成package 字符串的方法。		
+		// 获取sign
+		$sign = $this->getSign($para);
 		
 		// c.对string1 中的所有键值对中的value 进行urlencode 转码，按照a 步骤重新拼接成字符串，得到string2。
 		// 对于js 前端程序，一定要使用函数encodeURIComponent
@@ -411,6 +398,34 @@ class WeixinPayManager {
 		// d.将sign=signValue 拼接到string2 后面得到最终的package 字符串。
 		$package = $string2 . '&sign=' . $sign;
 		return $package;
+	}
+	
+		/**
+	 * 签名（Sign）生成方法
+	 *
+	 * @param array $para
+	 * @throws Exception
+	 * @return string
+	 */
+	public function getSign(array $para) {		
+		if (empty ( $this->partnerKey )) {
+			throw new Exception ( 'partnerKey is empty' );
+		}
+		
+		// a.除sign 字段外，对所有传入参数按照字段名的ASCII 码从小到大排序（字典序）后，
+		// 使用URL 键值对的格式（即key1=value1&key2=value2…）拼接成字符串string1；
+		// 除去数组中的空值和签名参数
+		$paraFilter = $this->paraFilter ( $para );
+		// 对数组排序
+		$paraFilter = $this->argSort ( $paraFilter );
+		$string1 = implode ( '&', $paraFilter );
+		
+		// b. 在string1 最后拼接上key=paternerKey 得到stringSignTemp 字符串，
+		// 并对stringSignTemp 进行md5 运算，再将得到的字符串所有字符转换为大写，得到sign 值signValue。
+		$sign = string1 . '&key=' . $this->partnerKey;
+		$sign = strtoupper ( md5 ( $sign ) );
+		
+		return $sign;
 	}
 	
 	/**
@@ -436,6 +451,8 @@ class WeixinPayManager {
 		} );
 		// 除去数组中的空值和签名参数
 		$paraFilter = Helper::paraFilter ( $paraFilter );
+		//增加或修改appkey
+		$paraFilter['appkey'] = $this->paySignKey;
 		// 对数组排序
 		$paraFilter = Helper::argSort ( $paraFilter );
 		$string1 = implode ( '&', $paraFilter );
