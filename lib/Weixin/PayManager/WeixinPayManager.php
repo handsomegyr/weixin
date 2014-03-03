@@ -186,7 +186,7 @@ class WeixinPayManager {
 		$package = $this->createPackage ( $para );
 		$postData ["package"] = $package;
 		
-		$postData ["timestamp"] = time ();
+		$postData ["timestamp"] = $timestamp;
 		// 获取app_signature
 		$para = array (
 				"appid" => $postData ["appid"],
@@ -294,7 +294,7 @@ class WeixinPayManager {
 		$para = array (
 				"appid" => $appid,
 				"appkey" => $this->paySignKey,
-				"timestamp" => time (),
+				"timestamp" => $timestamp,
 				"noncestr" => $noncestr,
 				"productid" => $productid 
 		);
