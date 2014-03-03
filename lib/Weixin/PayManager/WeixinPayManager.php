@@ -138,12 +138,13 @@ class WeixinPayManager {
 	 * 因为某一方技术的原因，可能导致商家在预期时间内都收不到最终支付通知，
 	 * 此时商家可以通过该API 来查询订单的详细支付状态。
 	 *
-	 * @param string $out_trade_no        	
+	 * @param string $out_trade_no   
+	 * @param int $timestamp
 	 * @param string $sign_method        	
 	 * @throws WeixinException
 	 * @return Ambigous <mixed, string>
 	 */
-	public function orderquery($out_trade_no, $sign_method = "sha1") {
+	public function orderquery($out_trade_no, $timestamp, $sign_method = "sha1") {
 		/**
 		 * 接口调用请求说明
 		 * Api 的url 为：
@@ -262,10 +263,11 @@ class WeixinPayManager {
 	 * 获取Native（原生）支付URL定义
 	 *
 	 * @param string $productid        	
-	 * @param string $noncestr        	
+	 * @param string $noncestr
+	 * @param int $timestamp
 	 * @return string
 	 */
-	public function getNativePayUrl($productid, $noncestr) {
+	public function getNativePayUrl($productid, $noncestr, $timestamp) {
 		/**
 		 * Native（原生）支付URL 是一系列具有weixin://wxpay/bizpayurl?前缀的url，同时后面
 		 * 紧跟着一系列辨别商家的键值对。Native（原生）支付URL 的规则如下：
@@ -318,6 +320,7 @@ class WeixinPayManager {
 	 * @param int $product_fee        	
 	 * @param string $goods_tag        	
 	 * @param string $noncestr        	
+	 * @param int $timestamp
 	 * @param string $bank_type        	
 	 * @param int $fee_type        	
 	 * @param string $input_charset        	
@@ -326,7 +329,7 @@ class WeixinPayManager {
 	 * @param string $reterrmsg        	
 	 * @return string
 	 */
-	public function getPackageForNativeUrl($body, $attach, $out_trade_no, $total_fee, $notify_url, $spbill_create_ip, $time_start, $time_expire, $transport_fee, $product_fee, $goods_tag, $noncestr, $bank_type = "WX", $fee_type = 1, $input_charset = "GBK", $SignMethod = "sha1", $retcode = 0, $reterrmsg = "ok") {
+	public function getPackageForNativeUrl($body, $attach, $out_trade_no, $total_fee, $notify_url, $spbill_create_ip, $time_start, $time_expire, $transport_fee, $product_fee, $goods_tag, $noncestr, $timestamp, $bank_type = "WX", $fee_type = 1, $input_charset = "GBK", $SignMethod = "sha1", $retcode = 0, $reterrmsg = "ok") {
 		/**
 		 * 为了返回Package 数据，回调URL 必须返回一个xml 格式的返回数据，形如：
 		 * <xml>
@@ -348,7 +351,6 @@ class WeixinPayManager {
 		 * 可以在RetErrMsg 中填上UTF8 编码的错误提示信息，比如“该商品已经下架”，客户端会直接提示出来。
 		 */
 		$appid = $this->weixin->getAppid ();
-		$timestamp = time ();
 		// 获取package
 		$package = $this->getPackage4JsPay ( $body, $attach, $out_trade_no, $total_fee, $notify_url, $spbill_create_ip, $time_start, $time_expire, $transport_fee, $product_fee, $goods_tag, $bank_type, $fee_type, $input_charset );
 		// 获取app_signature
