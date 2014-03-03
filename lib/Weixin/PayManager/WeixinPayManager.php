@@ -97,7 +97,7 @@ class WeixinPayManager {
 		// access_token 调用接口凭证
 		$access_token = $this->weixin->getToken ( 'access_token' );
 		$postData = array ();
-		$postData ["appid"] = $this->weixin->getAppid ();
+		$postData ["appid"] = $this->weixin->getAppId ();
 		$postData ["openid"] = $openid;
 		$postData ["transid"] = $transid;
 		$postData ["out_trade_no"] = $out_trade_no;
@@ -175,7 +175,7 @@ class WeixinPayManager {
 		$access_token = $this->weixin->getToken ( 'access_token' );
 		
 		$postData = array ();
-		$postData ["appid"] = $this->weixin->getAppid ();
+		$postData ["appid"] = $this->weixin->getAppId ();
 		
 		// 获取package
 		$para = array (
@@ -288,7 +288,7 @@ class WeixinPayManager {
 		 * 字段来源：对前面的其他字段与appKey 按照字典序排序后，使用SHA1 算法得到的结果。由商户生成后传入。
 		 * 参与sign 签名的字段包括：appid、timestamp、noncestr、productid 以及appkey
 		 */
-		$appid = $this->weixin->getAppid ();
+		$appid = $this->weixin->getAppId ();
 		$para = array (
 				"appid" => $appid,
 				"appkey" => $this->paySignKey,
@@ -347,7 +347,7 @@ class WeixinPayManager {
 		 * RetErrMsg 中体现出来，RetCode 为0 表明正确，可以定义其他错误；当定义其他错误时，
 		 * 可以在RetErrMsg 中填上UTF8 编码的错误提示信息，比如“该商品已经下架”，客户端会直接提示出来。
 		 */
-		$appid = $this->weixin->getAppid ();
+		$appid = $this->weixin->getAppId ();
 		$timestamp = time ();
 		// 获取package
 		$package = $this->getPackage4JsPay ( $body, $attach, $out_trade_no, $total_fee, $notify_url, $spbill_create_ip, $time_start, $time_expire, $transport_fee, $product_fee, $goods_tag, $bank_type, $fee_type, $input_charset );
