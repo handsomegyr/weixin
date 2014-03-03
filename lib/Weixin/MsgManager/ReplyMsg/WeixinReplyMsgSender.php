@@ -131,7 +131,7 @@ class WeixinReplyMsgSender
 	 public function replyMusic($toUser,$fromUser,$title,$description,$musicUrl,$hqMusicUrl='',$thumbMediaId=0) {
 	 	$time = time();
 	 	$hqMusicUrl = $hqMusicUrl=='' ? $musicUrl : $hqMusicUrl;
-	
+		$thumbMediaIdXml = empty($thumbMediaId)?"": "<ThumbMediaId><![CDATA[{$thumbMediaId}]]></ThumbMediaId>";
 	 	return "
 	 	<xml>
 		<ToUserName><![CDATA[{$toUser}]]></ToUserName>
@@ -143,7 +143,7 @@ class WeixinReplyMsgSender
 		<Description><![CDATA[{$description}]]></Description>
 		<MusicUrl><![CDATA[{$musicUrl}]]></MusicUrl>
 		<HQMusicUrl><![CDATA[{$hqMusicUrl}]]></HQMusicUrl>
-		<ThumbMediaId><![CDATA[{$thumbMediaId}]]></ThumbMediaId>
+		{$thumbMediaIdXml}
 		</Music>
 		</xml>";
 	}
