@@ -450,9 +450,9 @@ class WeixinPayManager {
 		
 		// 将所有key改为小写字符
 		$paraFilter = array ();
-		array_walk ( $paraFilter, function ($val, $key) use($para) {
-			$paraFilter [strtolower ( $key )] = $val;
-		} );
+    	foreach ($para as $key => $value) {
+    		$paraFilter [strtolower ( $key )] = $value;
+    	}
 		// 除去数组中的空值和签名参数
 		$paraFilter = Helper::paraFilter ( $paraFilter );
 		//增加或修改appkey
