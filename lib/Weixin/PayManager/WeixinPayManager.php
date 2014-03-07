@@ -17,26 +17,66 @@ use Weixin\WeixinClient;
  */
 class WeixinPayManager {
 	protected $weixin;
-	private $_url = 'https://api.weixin.qq.com/cgi-bin/pay/';
+	private $_url = 'https://api.weixin.qq.com/cgi-bin/';
+	
+	// appId公众号身份标识。
+	private $appId = "";
+	public function getAppId() {
+		if(empty($this->appId)){
+			throw new Exception('AppId未设定');
+		}
+		return $this->appId;
+	}
+	
+	// appSecret公众平台API(参考文档API 接口部分)的权限获取所需密钥Key，在使用所有公众平台API 时，都需要先用它去换取access_token，然后再进行调用。
+	private $appSecret = "";
+	public function getAppSecret() {
+		if(empty($this->appSecret)){
+			throw new Exception('AppSecret未设定');
+		}
+		return $this->appSecret;
+	}
 	
 	// paySignKey 公众号支付请求中用于加密的密钥Key，可验证商户唯一身份，PaySignKey对应于支付场景中的appKey 值。
-	public $paySignKey = "";
+	private $paySignKey = "";
 	public function setPaySignKey($paySignKey) {
 		$this->paySignKey = $paySignKey;
 	}
+	public function getPaySignKey() {
+		if(empty($this->paySignKey)){
+			throw new Exception('PaySignKey未设定');
+		}
+		return $this->paySignKey;
+	}
+	
 	// partnerId 财付通商户身份标识。
-	public $partnerId = "";
+	private $partnerId = "";
 	public function setPartnerId($partnerId) {
 		$this->partnerId = $partnerId;
 	}
-	
+	public function getPartnerId() {
+		if(empty($this->partnerId)){
+			throw new Exception('PartnerId未设定');
+		}
+		return $this->partnerId;
+	}
 	// partnerKey财付通商户权限密钥Key。
-	public $partnerKey = "";
+	private $partnerKey = "";
 	public function setPartnerKey($partnerKey) {
 		$this->partnerKey = $partnerKey;
 	}
+	public function getPartnerKey() {
+		if(empty($this->partnerKey)){
+			throw new Exception('PartnerKey未设定');
+		}
+		return $this->partnerKey;
+	}
+	
 	public function __construct(WeixinClient $weixin, $options = array()) {
 		$this->weixin = $weixin;
+		$this->appId = $this->getAppId ();
+		$this->appSecret = $this->weixin->getAppSecret ();
+		
 		// 支付相关的Options
 		if (isset ( $options ['pay'] )) {
 			$this->paySignKey = empty ( $options ['pay'] ['paySignKey'] ) ? "" : $options ['pay'] ['paySignKey'];
@@ -97,7 +137,7 @@ class WeixinPayManager {
 		// access_token 调用接口凭证
 		$access_token = $this->weixin->getToken ( 'access_token' );
 		$postData = array ();
-		$postData ["appid"] = $this->weixin->getAppid ();
+		$postData ["appid"] = $this->getAppId ();
 		$postData ["openid"] = $openid;
 		$postData ["transid"] = $transid;
 		$postData ["out_trade_no"] = $out_trade_no;
@@ -108,7 +148,7 @@ class WeixinPayManager {
 		// 获取app_signature
 		$para = array (
 				"appid" => $postData ["appid"],
-				"appkey" => $this->paySignKey,
+				"appkey" => $this->getPaySignKey (),
 				"openid" => $postData ["openid"],
 				"transid" => $postData ["transid"],
 				"out_trade_no" => $postData ["out_trade_no"],
@@ -121,7 +161,7 @@ class WeixinPayManager {
 		$postData ["sign_method"] = $sign_method;
 		
 		$json = json_encode ( $postData, JSON_UNESCAPED_UNICODE );
-		$rst = $this->weixin->post ( $this->_url . 'delivernotify?access_token=' . $access_token, $json );
+		$rst = $this->weixin->post ( $this->_url . 'pay/delivernotify?access_token=' . $access_token, $json );
 		if (! empty ( $rst ['errcode'] )) {
 			// 如果有异常，会在errcode 和errmsg 描述出来。
 			throw new WeixinException ( $rst ['errmsg'], $rst ['errcode'] );
@@ -176,12 +216,12 @@ class WeixinPayManager {
 		$access_token = $this->weixin->getToken ( 'access_token' );
 		
 		$postData = array ();
-		$postData ["appid"] = $this->weixin->getAppid ();
+		$postData ["appid"] = $this->getAppId ();
 		
 		// 获取package
 		$para = array (
 				"out_trade_no" => $out_trade_no,
-				"partner" => $this->partnerId 
+				"partner" => $this->getPartnerId () 
 		);
 		$package = $this->createPackage ( $para );
 		$postData ["package"] = $package;
@@ -190,7 +230,7 @@ class WeixinPayManager {
 		// 获取app_signature
 		$para = array (
 				"appid" => $postData ["appid"],
-				"appkey" => $this->paySignKey,
+				"appkey" => $this->getPaySignKey (),
 				"package" => $postData ["package"],
 				"timestamp" => $postData ["timestamp"] 
 		);
@@ -198,7 +238,7 @@ class WeixinPayManager {
 		$postData ["sign_method"] = $sign_method;
 		
 		$json = json_encode ( $postData, JSON_UNESCAPED_UNICODE );
-		$rst = $this->weixin->post ( $this->_url . 'delivernotify?access_token=' . $access_token, $json );
+		$rst = $this->weixin->post ( $this->_url . 'pay/orderquery?access_token=' . $access_token, $json );
 		if (! empty ( $rst ['errcode'] )) {
 			// 如果有异常，会在errcode 和errmsg 描述出来。
 			throw new WeixinException ( $rst ['errmsg'], $rst ['errcode'] );
@@ -290,10 +330,10 @@ class WeixinPayManager {
 		 * 字段来源：对前面的其他字段与appKey 按照字典序排序后，使用SHA1 算法得到的结果。由商户生成后传入。
 		 * 参与sign 签名的字段包括：appid、timestamp、noncestr、productid 以及appkey
 		 */
-		$appid = $this->weixin->getAppid ();
+		$appid = $this->getAppId ();
 		$para = array (
 				"appid" => $appid,
-				"appkey" => $this->paySignKey,
+				"appkey" => $this->getPaySignKey (),
 				"timestamp" => $timestamp,
 				"noncestr" => $noncestr,
 				"productid" => $productid 
@@ -308,28 +348,15 @@ class WeixinPayManager {
 	 * 为https://www.outdomain.com/cgi-bin/bizpaygetpackage
 	 *
 	 *
-	 * @param string $body        	
-	 * @param string $attach        	
-	 * @param string $out_trade_no        	
-	 * @param int $total_fee        	
-	 * @param string $notify_url        	
-	 * @param int $spbill_create_ip        	
-	 * @param string $time_start        	
-	 * @param string $time_expire        	
-	 * @param int $transport_fee        	
-	 * @param int $product_fee        	
-	 * @param string $goods_tag        	
-	 * @param string $noncestr        	
-	 * @param int $timestamp
-	 * @param string $bank_type        	
-	 * @param int $fee_type        	
-	 * @param string $input_charset        	
+	 * @param string $package        	
+	 * @param string $noncestr
+	 * @param int $timestamp      	
 	 * @param string $SignMethod        	
 	 * @param int $retcode        	
 	 * @param string $reterrmsg        	
 	 * @return string
 	 */
-	public function getPackageForNativeUrl($body, $attach, $out_trade_no, $total_fee, $notify_url, $spbill_create_ip, $time_start, $time_expire, $transport_fee, $product_fee, $goods_tag, $noncestr, $timestamp, $bank_type = "WX", $fee_type = 1, $input_charset = "GBK", $SignMethod = "sha1", $retcode = 0, $reterrmsg = "ok") {
+	public function getPackageForNativeUrl($package, $noncestr, $timestamp, $SignMethod = "sha1", $retcode = 0, $reterrmsg = "ok") {
 		/**
 		 * 为了返回Package 数据，回调URL 必须返回一个xml 格式的返回数据，形如：
 		 * <xml>
@@ -350,13 +377,11 @@ class WeixinPayManager {
 		 * RetErrMsg 中体现出来，RetCode 为0 表明正确，可以定义其他错误；当定义其他错误时，
 		 * 可以在RetErrMsg 中填上UTF8 编码的错误提示信息，比如“该商品已经下架”，客户端会直接提示出来。
 		 */
-		$appid = $this->weixin->getAppid ();
-		// 获取package
-		$package = $this->getPackage4JsPay ( $body, $attach, $out_trade_no, $total_fee, $notify_url, $spbill_create_ip, $time_start, $time_expire, $transport_fee, $product_fee, $goods_tag, $bank_type, $fee_type, $input_charset );
+		$appid = $this->getAppId ();
 		// 获取app_signature
 		$para = array (
 				"appid" => $appid,
-				"appkey" => $this->paySignKey,
+				"appkey" => $this->getPaySignKey (),
 				"package" => $package,
 				"timestamp" => $timestamp,
 				"noncestr" => $noncestr,
@@ -406,7 +431,7 @@ class WeixinPayManager {
 		return $package;
 	}
 	
-		/**
+	/**
 	 * 签名（Sign）生成方法
 	 *
 	 * @param array $para
@@ -414,9 +439,6 @@ class WeixinPayManager {
 	 * @return string
 	 */
 	public function getSign(array $para) {		
-		if (empty ( $this->partnerKey )) {
-			throw new Exception ( 'partnerKey is empty' );
-		}
 		
 		// a.除sign 字段外，对所有传入参数按照字段名的ASCII 码从小到大排序（字典序）后，
 		// 使用URL 键值对的格式（即key1=value1&key2=value2…）拼接成字符串string1；
@@ -428,7 +450,7 @@ class WeixinPayManager {
 		
 		// b. 在string1 最后拼接上key=paternerKey 得到stringSignTemp 字符串，
 		// 并对stringSignTemp 进行md5 运算，再将得到的字符串所有字符转换为大写，得到sign 值signValue。
-		$sign = string1 . '&key=' . $this->partnerKey;
+		$sign = string1 . '&key=' . $this->getPartnerKey ();
 		$sign = strtoupper ( md5 ( $sign ) );
 		
 		return $sign;
@@ -442,9 +464,6 @@ class WeixinPayManager {
 	 * @return string
 	 */
 	public function getPaySign(array $para) {
-		if (empty ( $this->paySignKey )) {
-			throw new Exception ( 'paySignKey is empty' );
-		}
 		
 		// 对所有待签名参数按照字段名的ASCII 码从小到大排序（字典序）后，
 		// 使用URL 键值对的格式（即key1=value1&key2=value2…）拼接成字符串string1。
@@ -458,7 +477,7 @@ class WeixinPayManager {
 		// 除去数组中的空值和签名参数
 		$paraFilter = Helper::paraFilter ( $paraFilter );
 		//增加或修改appkey
-		$paraFilter['appkey'] = $this->paySignKey;
+		$paraFilter['appkey'] = $this->getPaySignKey ();
 		// 对数组排序
 		$paraFilter = Helper::argSort ( $paraFilter );
 		$string1 = Helper::createLinkstring ( $paraFilter );
@@ -486,7 +505,7 @@ class WeixinPayManager {
 	 * @param string $out_trade_no        	
 	 * @param int $total_fee        	
 	 * @param string $notify_url        	
-	 * @param int $spbill_create_ip        	
+	 * @param string $spbill_create_ip        	
 	 * @param string $time_start        	
 	 * @param string $time_expire        	
 	 * @param int $transport_fee        	
@@ -532,7 +551,7 @@ class WeixinPayManager {
 				"bank_type" => $bank_type,
 				"body" => $body,
 				"attach" => $attach,
-				"partner" => $this->partnerId,
+				"partner" => $this->getPartnerId (),
 				"out_trade_no" => $out_trade_no,
 				"total_fee" => $total_fee,
 				"fee_type" => $fee_type,
@@ -548,5 +567,44 @@ class WeixinPayManager {
 		$package = $this->createPackage ( $para );
 		return $package;
 	}
-
+	
+	/**
+	 * 标记客户的投诉处理状态。 updatefeedback
+	 *
+	 *
+	 * @param string $openid
+	 * @param string $feedbackid
+	 * @throws Exception
+	 * @return Ambigous <mixed, string>
+	 */
+	public function updateFeedback($openid, $feedbackid) {
+		/**
+		 * 接口调用请求说明
+		 * Api的url为： https://api.weixin.qq.com/payfeedback/update?access_token=xxxxx&openid=XXXX&feedbackid=xxxx 
+		 * Url中的参数包含目前微信公众平台凭证access_token，
+		 * 和客户投诉对应的单号feedbackid，以及openid 微信公众平台在校验ok之后，
+		 * 会返回数据表明是否通知成功，例如： {"errcode":0,"errmsg":"ok"}
+		 * 如果有异常，会在 errcode和 errmsg描述出来，如果成功errcode就为0。
+		 */
+	
+		// 参数 说明
+		// access_token 调用接口凭证
+		$access_token = $this->weixin->getToken ( 'access_token' );
+		$params = array ();
+		$params ["access_token"] = $access_token;
+		$params ["openid"] = $openid;
+		$params ["feedbackid"] = $feedbackid;
+		
+		$rst = $this->weixin->get ( $this->_url . 'payfeedback/update', $params );
+		if (! empty ( $rst ['errcode'] )) {
+			// 如果有异常，会在errcode 和errmsg 描述出来。
+			throw new Exception ( $rst ['errmsg'], $rst ['errcode'] );
+		} else {
+			// 返回说明 正常时的返回JSON数据包示例：
+			// 微信公众平台在校验ok 之后，会返回数据表明是否通知成功，例如：
+			// {"errcode":0,"errmsg":"ok"}
+			return $rst;
+		}
+	}
+	
 }
