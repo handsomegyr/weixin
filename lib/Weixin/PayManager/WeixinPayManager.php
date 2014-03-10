@@ -414,9 +414,9 @@ class WeixinPayManager {
 		// a.除sign 字段外，对所有传入参数按照字段名的ASCII 码从小到大排序（字典序）后，
 		// 使用URL 键值对的格式（即key1=value1&key2=value2…）拼接成字符串string1；
 		// 除去数组中的空值和签名参数
-		$paraFilter = Helper::paraFilter ( $para );
+		$paraFilter = Helpers::paraFilter ( $para );
 		// 对数组排序
-		$paraFilter = Helper::argSort ( $paraFilter );
+		$paraFilter = Helpers::argSort ( $paraFilter );
 		
 		// 获取sign
 		$sign = $this->getSign($para);
@@ -424,7 +424,7 @@ class WeixinPayManager {
 		// c.对string1 中的所有键值对中的value 进行urlencode 转码，按照a 步骤重新拼接成字符串，得到string2。
 		// 对于js 前端程序，一定要使用函数encodeURIComponent
 		// 进行urlencode编码（注意！进行urlencode时要将空格转化为%20而不是+）。
-		$string2 = Helper::createLinkstringUrlencode ( $paraFilter );;
+		$string2 = Helpers::createLinkstringUrlencode ( $paraFilter );;
 		
 		// d.将sign=signValue 拼接到string2 后面得到最终的package 字符串。
 		$package = $string2 . '&sign=' . $sign;
@@ -443,10 +443,10 @@ class WeixinPayManager {
 		// a.除sign 字段外，对所有传入参数按照字段名的ASCII 码从小到大排序（字典序）后，
 		// 使用URL 键值对的格式（即key1=value1&key2=value2…）拼接成字符串string1；
 		// 除去数组中的空值和签名参数
-		$paraFilter = Helper::paraFilter ( $para );
+		$paraFilter = Helpers::paraFilter ( $para );
 		// 对数组排序
-		$paraFilter = Helper::argSort ( $paraFilter );
-		$string1 = Helper::createLinkstring ( $paraFilter );
+		$paraFilter = Helpers::argSort ( $paraFilter );
+		$string1 = Helpers::createLinkstring ( $paraFilter );
 		
 		// b. 在string1 最后拼接上key=paternerKey 得到stringSignTemp 字符串，
 		// 并对stringSignTemp 进行md5 运算，再将得到的字符串所有字符转换为大写，得到sign 值signValue。
@@ -475,12 +475,12 @@ class WeixinPayManager {
     		$paraFilter [strtolower ( $key )] = $value;
     	}
 		// 除去数组中的空值和签名参数
-		$paraFilter = Helper::paraFilter ( $paraFilter );
+		$paraFilter = Helpers::paraFilter ( $paraFilter );
 		//增加或修改appkey
 		$paraFilter['appkey'] = $this->getPaySignKey ();
 		// 对数组排序
-		$paraFilter = Helper::argSort ( $paraFilter );
-		$string1 = Helper::createLinkstring ( $paraFilter );
+		$paraFilter = Helpers::argSort ( $paraFilter );
+		$string1 = Helpers::createLinkstring ( $paraFilter );
 		
 		// 对string1 作签名算法，字段名和字段值都采用原始值（此时package 的value 就对应了
 		// 使用2.6 中描述的方式生成的package），不进行URL 转义。

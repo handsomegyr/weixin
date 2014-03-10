@@ -44,7 +44,7 @@ class Helpers
      * return 排序后的数组
      */
     public static function argSort($para) {
-    	ksort($para);
+    	ksort($para,SORT_STRING);
     	reset($para);
     	return $para;
     }
