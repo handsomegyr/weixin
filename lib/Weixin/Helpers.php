@@ -33,8 +33,8 @@ class Helpers
     public static function paraFilter($para) {
     	$para_filter = array();
     	while (list ($key, $val) = each ($para)) {
-    		if($key == "sign" || $val == "")continue;
-    		else	$para_filter[$key] = $para[$key];
+    		if(strtolower(trim($key)) === "sign" || trim($val) === "") continue;
+    		else $para_filter[$key] = $para[$key];
     	}
     	return $para_filter;
     }
@@ -60,12 +60,8 @@ class Helpers
     		$arg.=$key."=".$val."&";
     	}
     	//去掉最后一个&字符
-    	$arg = substr($arg,0,count($arg)-2);
-    
-    	//如果存在转义字符，那么去掉转义
-    	if(get_magic_quotes_gpc()){$arg = stripslashes($arg);}
-    
-    	return $arg;
+		$arg = substr($arg,0,strlen($arg)-1);	
+		return $arg;
     }
     /**
      * 把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串，并对字符串做urlencode编码
@@ -78,11 +74,7 @@ class Helpers
     		$arg.=$key."=".urlencode($val)."&";
     	}
     	//去掉最后一个&字符
-    	$arg = substr($arg,0,count($arg)-2);
-    
-    	//如果存在转义字符，那么去掉转义
-    	if(get_magic_quotes_gpc()){$arg = stripslashes($arg);}
-    
-    	return $arg;
+		$arg = substr($arg,0,strlen($arg)-1);	
+		return $arg;
     }
 }
