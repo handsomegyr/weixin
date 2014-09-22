@@ -71,7 +71,7 @@ class Helpers
     public static function createLinkstringUrlencode($para) {
     	$arg  = "";
     	while (list ($key, $val) = each ($para)) {
-    		$arg.=$key."=".urlencode($val)."&";
+    		$arg.=$key."=".rawurlencode($val)."&";
     	}
     	//去掉最后一个&字符
 		$arg = substr($arg,0,strlen($arg)-1);	
