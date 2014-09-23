@@ -11,6 +11,7 @@ use Weixin\QrcodeManager\WeixinQrcodeManager;
 use Weixin\UserManager\WeixinUserManager;
 use Weixin\PayManager\WeixinPayManager;
 use Weixin\ShortUrlManager\WeixinShortUrlManager;
+use Weixin\CustomServiceManager\WeixinCustomServiceManager;
 
 /**
  * 微信公众平台的调用接口类.
@@ -136,6 +137,18 @@ class WeixinClient
         return $this->weixinShortUrlManager;
     }
 
+    protected $weixinCustomServiceManager;
+    
+    /**
+     * GET WeixinCustomServiceManager object.
+     *
+     * @return WeixinShortManager
+     */
+    public function WeixinCustomServiceManager()
+    {
+        return $this->weixinCustomServiceManager;
+    }
+    
     public function __construct($appid, $secret, $access_token = NULL, $refresh_token = NULL, $options = array())
     {
         $this->_appid = $appid;
@@ -161,6 +174,8 @@ class WeixinClient
         $this->weixinPayManager = new WeixinPayManager($this, $options);
         // 长链接转短链接管理
         $this->weixinShortUrlManager = new WeixinShortUrlManager($this, $options);
+        // 多客服功能管理
+        $this->weixinCustomServiceManager = new WeixinCustomServiceManager($this, $options);
     }
 
     /**
