@@ -14,7 +14,7 @@ use Weixin\WeixinClient;
  * 对于appSecret 和paySignKey 的区别，可以这样认为：appSecret 是API 使用时的登录密码，会在网络中传播的；
  * 而paySignKey 是在所有支付相关数据传输时用于加密并进行身份校验的密钥，
  * 仅保留在第三方后台和微信后台，不会在网络中传播。
- * 
+ *
  * @author guoyongrong <handsomegyr@gmail.com>
  */
 class WeixinPayManager
@@ -518,6 +518,7 @@ class WeixinPayManager
     }
 
     /**
+     *
      *
      *
      *

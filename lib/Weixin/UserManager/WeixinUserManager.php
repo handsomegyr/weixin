@@ -114,7 +114,7 @@ class WeixinUserManager
             throw new WeixinException($rst['errmsg'], $rst['errcode']);
         } else {
             // 返回说明
-            // 正常时的返回JSON数据包示例：            
+            // 正常时的返回JSON数据包示例：
             // {
             // "errcode":0,
             // "errmsg":"ok"

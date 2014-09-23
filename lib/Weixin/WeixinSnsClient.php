@@ -218,7 +218,7 @@ class WeixinSnsClient
 
     /**
      * 获取Token
-     * 
+     *
      * @param string $key            
      * @return string
      */

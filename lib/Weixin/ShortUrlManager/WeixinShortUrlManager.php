@@ -56,7 +56,7 @@ class WeixinShortUrlManager
              */
             throw new WeixinException($rst['errmsg'], $rst['errcode']);
         } else {
-            /*
+            /**
              * {"errcode":0,"errmsg":"ok","short_url":"http:\/\/w.url.cn\/s\/AvCo6Ih"}
              */
             return $rst;
