@@ -187,7 +187,10 @@ class WeixinMediaManager
             throw new WeixinException("一个图文消息只支持1到10条图文");
         }
         $access_token = $this->weixin->getToken();
-        $json = json_encode($articles, JSON_UNESCAPED_UNICODE);
+        
+        $json = json_encode(array(
+            'articles' => $articles
+        ), JSON_UNESCAPED_UNICODE);
         
         $rst = $this->weixin->post($this->_url . 'uploadnews?access_token=' . $access_token, $json);
         
