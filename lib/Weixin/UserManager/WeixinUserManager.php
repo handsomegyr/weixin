@@ -102,10 +102,12 @@ class WeixinUserManager
          * "remark":"pangzi"
          * }
          */
+        $access_token = $this->weixin->getToken();
         $params = array();
         $params['openid'] = $openid;
         $params['remark'] = $remark; // 新的备注名，长度必须小于30字符
-        $rst = $this->weixin->post($this->_url . 'info/updateremark', $params);
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'info/updateremark?access_token=' . $access_token, $json);
         
         // 返回结果
         if (! empty($rst['errcode'])) {
