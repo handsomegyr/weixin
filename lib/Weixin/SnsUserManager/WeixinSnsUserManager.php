@@ -53,7 +53,7 @@ class WeixinSnsUserManager
      * @author Kan
      *        
      */
-    public function getSnsUserInfo($openid)
+    public function getSnsUserInfo($openid, $lang = 'zh_CN')
     {
         // 请求方法
         // http：GET（请使用https协议）
@@ -62,10 +62,12 @@ class WeixinSnsUserManager
         // 参数 描述
         // access_token 网页授权接口调用凭证,注意：此access_token与基础支持的access_token不同
         // openid 用户的唯一标识
+        // lang 返回国家地区语言版本，zh_CN 简体，zh_TW 繁体，en 英语
         $access_token = $this->weixin->getToken();
         $params = array();
         $params['access_token'] = $access_token;
         $params['openid'] = $openid;
+        $params['lang'] = $lang;
         $rst = $this->weixin->get("https://api.weixin.qq.com/sns/userinfo", $params);
         // 返回说明
         if (! empty($rst['errcode'])) {
