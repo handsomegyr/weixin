@@ -12,6 +12,7 @@ use Weixin\UserManager\WeixinUserManager;
 use Weixin\PayManager\WeixinPayManager;
 use Weixin\ShortUrlManager\WeixinShortUrlManager;
 use Weixin\CustomServiceManager\WeixinCustomServiceManager;
+use Weixin\SemanticManager\WeixinSemanticManager;
 
 /**
  * 微信公众平台的调用接口类.
@@ -149,6 +150,18 @@ class WeixinClient
         return $this->weixinCustomServiceManager;
     }
 
+    protected $weixinSemanticManager;
+    
+    /**
+     * GET WeixinSemanticManager object.
+     *
+     * @return WeixinSemanticManager
+     */
+    public function WeixinSemanticManager()
+    {
+        return $this->weixinSemanticManager;
+    }
+    
     public function __construct($appid, $secret, $access_token = NULL, $refresh_token = NULL, $options = array())
     {
         $this->_appid = $appid;
@@ -176,6 +189,8 @@ class WeixinClient
         $this->weixinShortUrlManager = new WeixinShortUrlManager($this, $options);
         // 多客服功能管理
         $this->weixinCustomServiceManager = new WeixinCustomServiceManager($this, $options);
+        // 语义理解功能管理
+        $this->weixinSemanticManager = new WeixinSemanticManager($this, $options);
     }
 
     /**
