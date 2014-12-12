@@ -77,4 +77,15 @@ class Helpers
 		$arg = substr($arg,0,strlen($arg)-1);	
 		return $arg;
     }
+    
+    /**
+     * 转化方法 很重要
+     *
+     * @param object $object
+     */
+    public static function object2array($object)
+    {
+        //return @json_decode(@json_encode($object), 1);
+        return @json_decode(preg_replace('/{}/', '""', @json_encode($object)), 1);
+    }
 }

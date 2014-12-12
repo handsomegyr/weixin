@@ -148,7 +148,7 @@ class WeixinClient
     {
         return $this->weixinCustomServiceManager;
     }
-    
+
     public function __construct($appid, $secret, $access_token = NULL, $refresh_token = NULL, $options = array())
     {
         $this->_appid = $appid;
@@ -292,6 +292,38 @@ class WeixinClient
         sort($tmpArr, SORT_STRING); // 按照字符串来进行比较，否则在某些数字的情况下，sort的结果与微信要求不符合，官方文档中给出的签名算法有误
         $tmpStr = sha1(implode($tmpArr));
         return $tmpStr === $signature ? true : false;
+    }
+
+    /**
+     * 获取信息接收信息
+     *
+     * @return array
+     */
+    public function recieve()
+    {
+        $postStr = file_get_contents('php://input');
+        $datas = (array) simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $datas = Helpers::object2array($datas);
+        
+        if (isset($datas['Event']) && $datas['Event'] === 'LOCATION') {
+            $Latitude = isset($datas['Latitude']) ? floatval($datas['Latitude']) : 0;
+            $Longitude = isset($datas['Longitude']) ? floatval($datas['Longitude']) : 0;
+            $datas['coordinate'] = array(
+                $Latitude,
+                $Longitude
+            );
+        }
+        
+        if (isset($datas['MsgType']) && $datas['MsgType'] === 'location') {
+            $Location_X = isset($datas['Location_X']) ? floatval($datas['Location_X']) : 0;
+            $Location_Y = isset($datas['Location_Y']) ? floatval($datas['Location_Y']) : 0;
+            $datas['coordinate'] = array(
+                $Location_X,
+                $Location_Y
+            );
+        }
+        
+        return $datas;
     }
 
     public function __destruct()
