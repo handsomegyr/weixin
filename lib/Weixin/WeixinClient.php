@@ -138,7 +138,7 @@ class WeixinClient
     }
 
     protected $weixinCustomServiceManager;
-    
+
     /**
      * GET WeixinCustomServiceManager object.
      *
@@ -254,6 +254,44 @@ class WeixinClient
     {
         $response = $this->weixinOAuthRequest->delete($url, $parameters);
         return $response;
+    }
+
+    /**
+     * 有效性校验
+     */
+    public function verify($verifyCode)
+    {
+        $echoStr = isset($_GET["echostr"]) ? trim($_GET["echostr"]) : '';
+        if (! empty($echoStr)) {
+            if ($this->checkSignature($verifyCode)) {
+                exit($echoStr);
+            }
+        }
+    }
+
+    /**
+     * 签名校验
+     *
+     * @param string $verifyCode            
+     * @return boolean
+     */
+    public function checkSignature($verifyCode)
+    {
+        if (empty($verifyCode))
+            throw new WeixinException("请设定校验签名所需的verify_code");
+        
+        $verifyCode = trim($verifyCode);
+        $signature = isset($_GET['signature']) ? trim($_GET['signature']) : '';
+        $timestamp = isset($_GET['timestamp']) ? trim($_GET['timestamp']) : '';
+        $nonce = isset($_GET['nonce']) ? trim($_GET['nonce']) : '';
+        $tmpArr = array(
+            $verifyCode,
+            $timestamp,
+            $nonce
+        );
+        sort($tmpArr, SORT_STRING); // 按照字符串来进行比较，否则在某些数字的情况下，sort的结果与微信要求不符合，官方文档中给出的签名算法有误
+        $tmpStr = sha1(implode($tmpArr));
+        return $tmpStr === $signature ? true : false;
     }
 
     public function __destruct()
