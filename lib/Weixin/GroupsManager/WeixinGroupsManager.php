@@ -9,7 +9,7 @@ use Weixin\WeixinClient;
  * 开发者可以使用接口，
  * 对公众平台的分组进行查询、创建、修改操作，
  * 也可以使用接口在需要时移动用户到某个分组。
- * 
+ *
  * @author guoyongrong <handsomegyr@gmail.com>
  */
 class WeixinGroupsManager
@@ -26,7 +26,7 @@ class WeixinGroupsManager
 
     /**
      * 查询分组
-     * 
+     *
      * @return mixed
      */
     public function get()
@@ -88,7 +88,7 @@ class WeixinGroupsManager
     /**
      * 创建分组
      * 一个公众账号，最多支持创建500个分组
-     * 
+     *
      * @param
      *            $name
      * @return mixed
@@ -130,7 +130,7 @@ class WeixinGroupsManager
 
     /**
      * 修改分组名
-     * 
+     *
      * @param
      *            $id
      * @param
@@ -169,7 +169,7 @@ class WeixinGroupsManager
 
     /**
      * 移动用户分组
-     * 
+     *
      * @param
      *            $openid
      * @param
@@ -201,6 +201,53 @@ class WeixinGroupsManager
         } else {
             // 返回说明 正常时的返回JSON数据包示例：
             // {"errcode": 0, "errmsg": "ok"}
+            return $rst;
+        }
+    }
+
+    /**
+     * 查询用户所在分组
+     *
+     * @param
+     *            $openid
+     * @return mixed
+     */
+    public function getid($openid)
+    {
+        /**
+         * 通过用户的OpenID查询其所在的GroupID。 接口调用请求说明
+         *
+         * http请求方式: POST（请使用https协议）
+         * https://api.weixin.qq.com/cgi-bin/groups/getid?access_token=ACCESS_TOKEN
+         * POST数据格式：json
+         * POST数据例子：{"openid":"od8XIjsmk6QdVTETa9jLtGWA6KBc"}
+         * 参数说明
+         *
+         * 参数	说明
+         * access_token 调用接口凭证
+         * openid 用户的OpenID
+         * 返回说明 正常时的返回JSON数据包示例：
+         *
+         * {
+         * "groupid": 102
+         * }
+         * 参数说明
+         *
+         * 参数	说明
+         * groupid 用户所属的groupid
+         * 错误时的JSON数据包示例（该示例为OpenID无效错误）：
+         *
+         * {"errcode":40003,"errmsg":"invalid openid"}
+         */
+        $access_token = $this->weixin->getToken();
+        $params = array();
+        $params['openid'] = $openid;
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'getid?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
             return $rst;
         }
     }
