@@ -188,9 +188,9 @@ class WeixinMediaManager
         }
         $access_token = $this->weixin->getToken();
         
-        $json = json_encode(array(
-            'articles' => $articles
-        ), JSON_UNESCAPED_UNICODE);
+        $params = array();
+        $params['articles'] = $articles;
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
         
         $rst = $this->weixin->post($this->_url . 'uploadnews?access_token=' . $access_token, $json);
         

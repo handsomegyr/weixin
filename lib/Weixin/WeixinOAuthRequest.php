@@ -273,6 +273,8 @@ class WeixinOAuthRequest
         curl_setopt($ci, CURLOPT_HEADER, FALSE);
         switch ($method) {
             case 'POST':
+                //针对PHP>5.5 的 CURL 需要增加参数 
+                curl_setopt($ci, CURLOPT_SAFE_UPLOAD, false);
                 curl_setopt($ci, CURLOPT_POST, TRUE);
                 if (! empty($postfields)) {
                     curl_setopt($ci, CURLOPT_POSTFIELDS, $postfields);
