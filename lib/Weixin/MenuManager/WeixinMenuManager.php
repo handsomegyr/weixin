@@ -217,8 +217,16 @@ class WeixinMenuManager
 
     private function validateKey($menu)
     {
-        // 类型为click必须
-        if (strtolower($menu['type']) == 'click') {
+        // click等点击类型必须
+        if (in_array(strtolower($menu['type']), array(
+            'click',
+            'scancode_push',
+            'scancode_waitmsg',
+            'pic_sysphoto',
+            'pic_photo_or_album',
+            'pic_weixin',
+            'location_select'
+        ))) {
             if (strlen(trim($menu['key'])) < 1)
                 return 40019;
         }

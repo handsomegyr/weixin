@@ -131,4 +131,131 @@ class WeixinMediaManager
             return $rst;
         }
     }
+
+    /**
+     * 上传图文消息素材（用于群发图文消息）
+     *
+     * @param array $articles            
+     * @throws Exception
+     */
+    public function uploadNews(array $articles)
+    {
+        /**
+         * 上传图文消息素材【订阅号与服务号认证后均可用】
+         *
+         * 接口调用请求说明
+         *
+         * http请求方式: POST
+         * https://api.weixin.qq.com/cgi-bin/media/uploadnews?access_token=ACCESS_TOKEN
+         * POST数据说明
+         *
+         * POST数据示例如下：
+         *
+         * {
+         * "articles": [
+         * {
+         * "thumb_media_id":"qI6_Ze_6PtV7svjolgs-rN6stStuHIjs9_DidOHaj0Q-mwvBelOXCFZiq2OsIU-p",
+         * "author":"xxx",
+         * "title":"Happy Day",
+         * "content_source_url":"www.qq.com",
+         * "content":"content",
+         * "digest":"digest",
+         * "show_cover_pic":"1"
+         * },
+         * {
+         * "thumb_media_id":"qI6_Ze_6PtV7svjolgs-rN6stStuHIjs9_DidOHaj0Q-mwvBelOXCFZiq2OsIU-p",
+         * "author":"xxx",
+         * "title":"Happy Day",
+         * "content_source_url":"www.qq.com",
+         * "content":"content",
+         * "digest":"digest",
+         * "show_cover_pic":"0"
+         * }
+         * ]
+         * }
+         * 参数	是否必须	说明
+         * Articles 是 图文消息，一个图文消息支持1到10条图文
+         * thumb_media_id 是 图文消息缩略图的media_id，可以在基础支持-上传多媒体文件接口中获得
+         * author 否 图文消息的作者
+         * title 是 图文消息的标题
+         * content_source_url 否 在图文消息页面点击“阅读原文”后的页面
+         * content 是 图文消息页面的内容，支持HTML标签
+         * digest 否 图文消息的描述
+         * show_cover_pic 否 是否显示封面，1为显示，0为不显示
+         */
+        if (count($articles) < 1 || count($articles) > 10) {
+            throw new WeixinException("一个图文消息只支持1到10条图文");
+        }
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($articles, JSON_UNESCAPED_UNICODE);
+        
+        $rst = $this->weixin->post($this->_url . 'uploadnews?access_token=' . $access_token, $json);
+        
+        // 返回结果
+        if (! empty($rst['errcode'])) {
+            // 错误情况下的返回JSON数据包示例如下（示例为无效媒体类型错误）：
+            // {"errcode":40004,"errmsg":"invalid media type"}
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            /**
+             * 返回说明
+             *
+             * 返回数据示例（正确时的JSON返回结果）：
+             *
+             * {
+             * "type":"news",
+             * "media_id":"CsEf3ldqkAYJAU6EJeIkStVDSvffUJ54vqbThMgplD-VJXXof6ctX5fI6-aYyUiQ",
+             * "created_at":1391857799
+             * }
+             * 参数	说明
+             * type 媒体文件类型，分别有图片（image）、语音（voice）、视频（video）和缩略图（thumb），次数为news，即图文消息
+             * media_id 媒体文件/图文消息上传后获取的唯一标识
+             * created_at 媒体文件上传时间
+             */
+            return $rst;
+        }
+    }
+
+    /**
+     * 上传视频素材（用于群发视频消息）
+     *
+     * @param string $media_id            
+     * @param string $title            
+     * @param string $description            
+     */
+    public function uploadVideo($media_id, $title, $description)
+    {
+        /**
+         * {
+         * "media_id": "rF4UdIMfYK3efUfyoddYRMU50zMiRmmt_l0kszupYh_SzrcW5Gaheq05p_lHuOTQ",
+         * "title": "TITLE",
+         * "description": "Description"
+         * }
+         */
+        $access_token = $this->weixin->getToken();
+        
+        $video = array();
+        $video["media_id"] = $media_id;
+        $video["title"] = $title;
+        $video["description"] = $description;
+        $json = json_encode($video, JSON_UNESCAPED_UNICODE);
+        
+        $rst = $this->weixin->post($this->_url . 'uploadvideo?access_token=' . $access_token, $json);
+        
+        // 返回结果
+        if (! empty($rst['errcode'])) {
+            // 错误情况下的返回JSON数据包示例如下（示例为无效媒体类型错误）：
+            // {"errcode":40004,"errmsg":"invalid media type"}
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            // 返回说明
+            // 正确时的返回JSON数据包如下：
+            // {
+            // "type":"video",
+            // "media_id":"IhdaAQXuvJtGzwwc0abfXnzeezfO0NgPK6AQYShD8RQYMTtfzbLdBIQkQziv2XJc",
+            // "created_at":1398848981
+            // }
+            return $rst;
+        }
+    }
 }
