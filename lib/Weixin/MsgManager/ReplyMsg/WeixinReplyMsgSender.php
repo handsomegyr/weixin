@@ -214,15 +214,28 @@ class WeixinReplyMsgSender
      *
      * @return string
      */
-    public function replyCustomerService()
+    public function replyCustomerService($KfAccount = NULL)
     {
         $time = time();
-        return "
-	    <xml>
-	    <ToUserName><![CDATA[{$this->_to}]]></ToUserName>
-	    <FromUserName><![CDATA[{$this->_from}]]></FromUserName>
-	    <CreateTime>{$time}</CreateTime>
-	    <MsgType><![CDATA[transfer_customer_service]]></MsgType>
-	    </xml>";
+        if (empty($KfAccount)) {
+            return "
+    	    <xml>
+    	    <ToUserName><![CDATA[{$this->_to}]]></ToUserName>
+    	    <FromUserName><![CDATA[{$this->_from}]]></FromUserName>
+    	    <CreateTime>{$time}</CreateTime>
+    	    <MsgType><![CDATA[transfer_customer_service]]></MsgType>
+    	    </xml>";
+        } else {
+            return "
+            <xml>
+            <ToUserName><![CDATA[{$this->_to}]]></ToUserName>
+            <FromUserName><![CDATA[{$this->_from}]]></FromUserName>
+            <CreateTime>{$time}</CreateTime>
+            <MsgType><![CDATA[transfer_customer_service]]></MsgType>
+            <TransInfo>
+               <KfAccount>![CDATA[{$KfAccount}]</KfAccount>
+            </TransInfo>
+            </xml>";
+        }
     }
 }
