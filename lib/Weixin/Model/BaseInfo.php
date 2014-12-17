@@ -171,6 +171,12 @@ class BaseInfo
      */
     public $card_id = NULL;
 
+    /**
+     * status
+     * 1：待审核，2：审核失败，3：通过审核， 4：已删除（飞机票的status 字段为1：正常2：已删除）
+     */
+    public $status = NULL;
+    
     public function __construct($logo_url, $brand_name, $code_type, $title, $color, $notice, $description, DateInfo $date_info, Sku $sku)
     {
         if (! $date_info instanceof DateInfo)
@@ -257,7 +263,12 @@ class BaseInfo
     {
         $this->card_id = $card_id;
     }
-
+    
+    public function set_status($status)
+    {
+        $this->status = $status;
+    }
+    
     public function getParams()
     {
         $params = array();
