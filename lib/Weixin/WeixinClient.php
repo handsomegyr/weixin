@@ -14,6 +14,7 @@ use Weixin\ShortUrlManager\WeixinShortUrlManager;
 use Weixin\CustomServiceManager\WeixinCustomServiceManager;
 use Weixin\SemanticManager\WeixinSemanticManager;
 use Weixin\CardManager\WeixinCardManager;
+use Weixin\IpManager\WeixinIpManager;
 
 /**
  * 微信公众平台的调用接口类.
@@ -175,6 +176,16 @@ class WeixinClient
         return $this->weixinCardManager;
     }
 
+    /**
+     * GET WeixinIpManager object.
+     *
+     * @return WeixinIpManager
+     */
+    public function WeixinIpManager()
+    {
+        return $this->weixinIpManager;
+    }
+    
     public function __construct($appid, $secret, $access_token = NULL, $refresh_token = NULL, $options = array())
     {
         $this->_appid = $appid;
@@ -206,6 +217,8 @@ class WeixinClient
         $this->weixinSemanticManager = new WeixinSemanticManager($this, $options);
         // 微信卡券功能管理
         $this->weixinCardManager = new WeixinCardManager($this, $options);
+        // 微信服务器IP管理
+        $this->weixinIpManager = new WeixinIpManager($this, $options);
     }
 
     /**
