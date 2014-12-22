@@ -50,6 +50,22 @@ class BoardingPass extends CardBase
     public $check_in_url = NULL;
 
     /**
+     * gate
+     * 登机口。
+     * 如发生登机口变更，建议商家实时调用该接口变更。
+     * 否
+     */
+    public $gate = NULL;
+
+    /**
+     * boarding_time
+     * 登机时间，只显示“时分”不显示日期，按时间戳格式填写。
+     * 如发生登机时间变更，建议商家实时调用该接口变更。
+     * 否
+     */
+    public $boarding_time = NULL;
+
+    /**
      * air_model
      * 机型，上限为8 个汉字
      * 否
@@ -81,6 +97,16 @@ class BoardingPass extends CardBase
         $this->check_in_url = $check_in_url;
     }
 
+    public function set_gate($gate)
+    {
+        $this->gate = $gate;
+    }
+
+    public function set_boarding_time($boarding_time)
+    {
+        $this->boarding_time = $boarding_time;
+    }
+
     public function set_air_model($air_model)
     {
         $this->air_model = $air_model;
@@ -107,6 +133,12 @@ class BoardingPass extends CardBase
         }
         if ($this->check_in_url != NULL) {
             $params['check_in_url'] = $this->check_in_url;
+        }
+        if ($this->gate != NULL) {
+            $params['gate'] = $this->gate;
+        }
+        if ($this->boarding_time != NULL) {
+            $params['boarding_time'] = $this->boarding_time;
         }
         if ($this->air_model != NULL) {
             $params['air_model'] = $this->air_model;
