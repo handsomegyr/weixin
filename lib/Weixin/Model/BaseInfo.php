@@ -244,7 +244,7 @@ class BaseInfo
         $this->can_give_friend = $can_give_friend;
     }
 
-    public function set_location_id_list(array $location_id_list)
+    public function set_location_id_list($location_id_list)
     {
         $this->location_id_list = $location_id_list;
     }

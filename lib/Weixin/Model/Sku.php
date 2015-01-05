@@ -16,6 +16,9 @@ class Sku
 
     public function __construct($quantity)
     {
+        if (intval($quantity) <= 0) {
+            throw new \Exception('上架的数量不能小于0');
+        }
         $this->quantity = $quantity;
     }
 
