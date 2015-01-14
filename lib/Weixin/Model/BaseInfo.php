@@ -177,6 +177,12 @@ class BaseInfo
      */
     public $status = NULL;
     
+    /**
+     * get_custom_code_mode
+     * 否
+     */
+    public $get_custom_code_mode = NULL;
+    
     public function __construct($logo_url, $brand_name, $code_type, $title, $color, $notice, $description, DateInfo $date_info, Sku $sku)
     {
         if (! $date_info instanceof DateInfo)
@@ -269,6 +275,11 @@ class BaseInfo
         $this->status = $status;
     }
     
+    public function set_get_custom_code_mode($get_custom_code_mode)
+    {
+        $this->get_custom_code_mode = $get_custom_code_mode;
+    }
+    
     public function getParams()
     {
         $params = array();
@@ -334,6 +345,9 @@ class BaseInfo
         }
         if ($this->custom_url != NULL) {
             $params['custom_url'] = $this->custom_url;
+        }
+        if ($this->get_custom_code_mode != NULL) {
+            $params['get_custom_code_mode'] = $this->get_custom_code_mode;
         }
         return $params;
     }
