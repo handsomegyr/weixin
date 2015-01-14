@@ -119,4 +119,29 @@ class Helpers
         }
         return $str;
     }
+    
+    /**
+     * 作用：array转xml
+     */
+    public static function arrayToXml($arr)
+    {
+        $xml = "<xml>";
+        foreach ($arr as $key => $val) {
+            if (is_numeric($val)) {
+                $xml .= "<" . $key . ">" . $val . "</" . $key . ">";
+            } else
+                $xml .= "<" . $key . "><![CDATA[" . $val . "]]></" . $key . ">";
+        }
+        $xml .= "</xml>";
+        return $xml;
+    }
+    
+    /**
+     * 作用：将xml转为array
+     */
+    public static function xmlToArray($xml)
+    {
+        $object = simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA);
+        return @json_decode(preg_replace('/{}/', '""', @json_encode($object)), 1);
+    }
 }
