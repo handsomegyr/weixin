@@ -17,7 +17,8 @@ abstract class CardBase
         "SCENIC_TICKET" => "SCENIC_TICKET",
         "MOVIE_TICKET" => "MOVIE_TICKET",
         "BOARDING_PASS" => "BOARDING_PASS",
-        "LUCKY_MONEY" => "LUCKY_MONEY"
+        "LUCKY_MONEY" => "LUCKY_MONEY",
+        "MEETING_TICKET" => "MEETING_TICKET"
     );
 
     /**

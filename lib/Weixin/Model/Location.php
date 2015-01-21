@@ -3,12 +3,27 @@ namespace Weixin\Model;
 
 class Location
 {
+
+    /**
+     * id
+     * 门店Id
+     * 否
+     */
+    public $id = NULL;
+
     /**
      * business_name
      * 门店名称
      * 是
      */
     public $business_name = NULL;
+
+    /**
+     * branch_name
+     * 分店名
+     * 否
+     */
+    public $branch_name = NULL;
 
     /**
      * province
@@ -66,9 +81,10 @@ class Location
      */
     public $latitude = NULL;
 
-    public function __construct($business_name, $province, $city, $district, $address, $telephone, $category, $longitude, $latitude)
+    public function __construct($business_name, $branch_name, $province, $city, $district, $address, $telephone, $category, $longitude, $latitude)
     {
         $this->business_name = $business_name; // 门店名称
+        $this->branch_name = $branch_name; // 门店名称
         $this->province = $province; // 门店所在的省
         $this->city = $city; // 门店所在的市
         $this->district = $district; // 门店所在的区
@@ -77,5 +93,10 @@ class Location
         $this->category = $category; // 门店的类型（酒店、餐饮、购物...）
         $this->longitude = $longitude; // 门店所在地理位置的经度
         $this->latitude = $latitude; // 门店所在地理位置的纬度
+    }
+
+    public function set_id($id)
+    {
+        $this->id = $id;
     }
 }

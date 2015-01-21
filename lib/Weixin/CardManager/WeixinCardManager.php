@@ -1508,4 +1508,94 @@ class WeixinCardManager
             return $rst;
         }
     }
+
+    /**
+     * 获取api_ticket
+     * api_ticket 是用于调用微信 JSAPI 的临时票据， 有效期为 7200 秒， 通过 access_token来获取。
+     * 注：由于获取 api_ticket 的 api 调用次数非常有限，频繁刷新 api_ticket 会导致 api 调用受限，影响自身业务，开发者需在自己的服务存储与更新 api_ticket。
+     * 接口调用请求说明
+     * 协议 https
+     * http 请求方式 GET
+     * 请求 Url https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=wx_card
+     * POST 数据格式 json
+     * 请求参数说明
+     * 参数 是否必须 说明
+     * access_token 是 调用接口凭证
+     * 返回数据说明
+     * 数据示例：
+     * 微信卡券接口文档
+     * {
+     * "errcode":0,
+     * "errmsg":"ok",
+     * "ticket":"bxLdikRXVbTPdHSM05e5u5sUoXNKdvsdshFKA",
+     * "expires_in":7200
+     * }
+     * 字段 说明
+     * errcode 错误码，0 为正常
+     * errmsg 错误信息
+     * ticket api_ticket，签名中所需凭证
+     * expires_in 有效时间
+     */
+    public function getApiTicket()
+    {
+        $params = array();
+        $params['type'] = 'wx_card';
+        $access_token = $this->weixin->getToken();
+        $rst = $this->weixin->get('https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' . $access_token, $params);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+
+    /**
+     * 上传LOGO接口
+     * 开发者需调用该接口上传商户图标至微信服务器，获取相应 logo_url，用于卡券创建。
+     * 注意事项
+     * 1.上传的图片限制文件大小限制 1MB，像素为 300*300，支持 JPG 格式。
+     * 2.调用接口获取的 logo_url 进支持在微信相关业务下使用，否则会做相应处理。
+     * 接口调用请求说明
+     * 协议 https
+     * http 请求方式 POST/FROM
+     * 请求 Url https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=ACCESS_TOKEN
+     * POST 数据格式 json
+     * 请求参数说明
+     * 参数 说明 是否必填
+     * access_token 调用接口凭证 是
+     * buffer 文件的数据流是POST 数据
+     * 调用示例（使用 curl 命令，用 FORM 表单方式上传一个图片） ：
+     * curl –F buffer=@test.jpg
+     * 返回数据说明
+     * 返回正确的示例：
+     * {
+     * "errcode":0,
+     * "errmsg":"ok",
+     * {"url":"http://mmbiz.qpic.cn/mmbiz/iaL1LJM1mF9aRKPZJkmG8xXhiaHqkKSVMMWeN3hLut7X7hicFNjakmxibMLGWpXrEXB33367o7zHN0CwngnQY7zb7g/0"}
+     * }
+     * 返回错误的示例
+     * {"errcode":40009,"errmsg":"invalid image size"}
+     * 字段 说明
+     * url 商户 logo_url
+     * errcode 错误码，0 为正常
+     * errmsg 错误信息
+     *
+     * @throws Exception
+     * @return Ambigous <\Weixin\Http\mixed, multitype:, string, number, boolean, mixed>
+     */
+    public function uploadLogoUrl($logo)
+    {
+        $access_token = $this->weixin->getToken();
+        $params = array();
+        $params['access_token'] = $access_token;
+        $params['buffer'] = '@' . $logo;
+        $rst = $this->weixin->post('https://api.weixin.qq.com/cgi-bin/media/uploadimg', $params, true);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
 }
