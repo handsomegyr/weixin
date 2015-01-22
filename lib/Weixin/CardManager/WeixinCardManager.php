@@ -1510,6 +1510,63 @@ class WeixinCardManager
     }
 
     /**
+     * 核查code接口
+     * 接口说明
+     * 支持开发者调用该接口查询code导入情况。
+     * 接口调用请求说明
+     * 协议 https
+     * http请求方式 POST
+     * 请求Url http://api.weixin.qq.com/card/code/checkcode?access_token=ACCESS_TOKEN
+     * POST数据格式 json
+     * 请求参数说明
+     * 参数 说明 是否必填
+     * access_token 调用接口凭证 是
+     * POST数据
+     * 数据示例
+     * {
+     * "card_id":"pDF3iY0_dVjb_Pua96MMewA96qvA",
+     * "code":[
+     * "11111",
+     * "22222",
+     * "33333",
+     * "44444",
+     * "55555"
+     * ]
+     * }
+     * 字段 说明 是否必填
+     * card_id 参与活动的卡券ID 是
+     * code 需导入微信卡券后台的自定义code，上限为100个 是
+     * 返回数据说明
+     * 返回示例：
+     * {
+     * "errcode":0,
+     * "errmsg":"ok"
+     * "exist_code":["11111","22222","33333"],
+     * "not_exist_code":["44444","55555"]
+     * }
+     * 字段 说明
+     * errcode 错误码，0为正常。
+     * errmsg 错误信息。
+     * exist_code 已经成功存入的code。
+     * not_exist_code 没有存入的code。
+     */
+    public function codeCheck($card_id, array $codes)
+    {
+        $params = array();
+        $params['card_id'] = $card_id;
+        $params['code'] = $codes;
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post('http://api.weixin.qq.com/card/code/checkcode?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+
+    /**
      * 获取api_ticket
      * api_ticket 是用于调用微信 JSAPI 的临时票据， 有效期为 7200 秒， 通过 access_token来获取。
      * 注：由于获取 api_ticket 的 api 调用次数非常有限，频繁刷新 api_ticket 会导致 api 调用受限，影响自身业务，开发者需在自己的服务存储与更新 api_ticket。
