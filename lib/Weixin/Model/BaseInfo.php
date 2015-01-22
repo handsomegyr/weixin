@@ -166,23 +166,41 @@ class BaseInfo
     public $custom_url = NULL;
 
     /**
+     * status
+     * 1：待审核，2：审核失败，3：通过审核， 4：已删除（飞机票的status 字段为1：正常2：已删除）
+     */
+    public $status = NULL;
+
+    /**
      * card_id
      * 否
      */
     public $card_id = NULL;
 
     /**
-     * status
-     * 1：待审核，2：审核失败，3：通过审核， 4：已删除（飞机票的status 字段为1：正常2：已删除）
+     * 以下字段都是用以微信摇一摇的时候设置
      */
-    public $status = NULL;
-    
     /**
+     * GET_CUSTOM_CODE_MODE_DEPOSIT,字符串格式，该字段支持开发者导入code至微信后台。
      * get_custom_code_mode
      * 否
      */
     public $get_custom_code_mode = NULL;
-    
+
+    /**
+     * 新年祝语标题，限制10个汉字以内
+     * shake_slogan_title
+     * 否
+     */
+    public $shake_slogan_title = NULL;
+
+    /**
+     * 新年祝语正文，限制16个汉字以内
+     * shake_slogan_sub_title
+     * 否
+     */
+    public $shake_slogan_sub_title = NULL;
+
     public function __construct($logo_url, $brand_name, $code_type, $title, $color, $notice, $description, DateInfo $date_info, Sku $sku)
     {
         if (! $date_info instanceof DateInfo)
@@ -269,17 +287,27 @@ class BaseInfo
     {
         $this->card_id = $card_id;
     }
-    
+
     public function set_status($status)
     {
         $this->status = $status;
     }
-    
+
     public function set_get_custom_code_mode($get_custom_code_mode)
     {
         $this->get_custom_code_mode = $get_custom_code_mode;
     }
-    
+
+    public function set_shake_slogan_title($shake_slogan_title)
+    {
+        $this->shake_slogan_title = $shake_slogan_title;
+    }
+
+    public function set_shake_slogan_sub_title($shake_slogan_sub_title)
+    {
+        $this->shake_slogan_sub_title = $shake_slogan_sub_title;
+    }
+
     public function getParams()
     {
         $params = array();
@@ -348,6 +376,12 @@ class BaseInfo
         }
         if ($this->get_custom_code_mode != NULL) {
             $params['get_custom_code_mode'] = $this->get_custom_code_mode;
+        }
+        if ($this->shake_slogan_title != NULL) {
+            $params['shake_slogan_title'] = $this->shake_slogan_title;
+        }
+        if ($this->shake_slogan_sub_title != NULL) {
+            $params['shake_slogan_sub_title'] = $this->shake_slogan_sub_title;
         }
         return $params;
     }
