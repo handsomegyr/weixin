@@ -202,6 +202,13 @@ class BaseInfo
     public $get_custom_code_mode = NULL;
 
     /**
+     * can_shake
+     * 填写 true,为参加摇礼券活动的标志位。
+     * 否
+     */
+    public $can_shake = NULL;
+
+    /**
      * 新年祝语标题，限制10个汉字以内
      * shake_slogan_title
      * 否
@@ -322,6 +329,11 @@ class BaseInfo
         $this->get_custom_code_mode = $get_custom_code_mode;
     }
 
+    public function set_can_shake($can_shake)
+    {
+        $this->can_shake = $can_shake;
+    }
+
     public function set_shake_slogan_title($shake_slogan_title)
     {
         $this->shake_slogan_title = $shake_slogan_title;
@@ -408,6 +420,9 @@ class BaseInfo
         
         if ($this->get_custom_code_mode != NULL) {
             $params['get_custom_code_mode'] = $this->get_custom_code_mode;
+        }
+        if ($this->can_shake != NULL) {
+            $params['can_shake'] = $this->can_shake;
         }
         if ($this->shake_slogan_title != NULL) {
             $params['shake_slogan_title'] = $this->shake_slogan_title;
