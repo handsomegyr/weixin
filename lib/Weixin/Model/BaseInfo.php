@@ -166,6 +166,20 @@ class BaseInfo
     public $custom_url = NULL;
 
     /**
+     * promotion_url_name_type
+     * 特殊权限自定义 cell，权限需单独开通。
+     * 否
+     */
+    public $promotion_url_name_type = NULL;
+
+    /**
+     * promotion_url
+     * 特殊权限自定义 url 地址， 支持卡券页内跳转,跳转页面内容需与cell 名称保持一致。（权限需单独开通）
+     * 否
+     */
+    public $promotion_url = NULL;
+
+    /**
      * status
      * 1：待审核，2：审核失败，3：通过审核， 4：已删除（飞机票的status 字段为1：正常2：已删除）
      */
@@ -283,6 +297,16 @@ class BaseInfo
         $this->custom_url = $custom_url;
     }
 
+    public function set_promotion_url_name_type($promotion_url_name_type)
+    {
+        $this->promotion_url_name_type = $promotion_url_name_type;
+    }
+
+    public function set_promotion_url($promotion_url)
+    {
+        $this->promotion_url = $promotion_url;
+    }
+
     public function set_card_id($card_id)
     {
         $this->card_id = $card_id;
@@ -374,6 +398,14 @@ class BaseInfo
         if ($this->custom_url != NULL) {
             $params['custom_url'] = $this->custom_url;
         }
+        
+        if ($this->promotion_url_name_type != NULL) {
+            $params['promotion_url_name_type'] = $this->promotion_url_name_type;
+        }
+        if ($this->promotion_url != NULL) {
+            $params['promotion_url'] = $this->promotion_url;
+        }
+        
         if ($this->get_custom_code_mode != NULL) {
             $params['get_custom_code_mode'] = $this->get_custom_code_mode;
         }
