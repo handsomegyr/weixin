@@ -16,6 +16,7 @@ use Weixin\SemanticManager\WeixinSemanticManager;
 use Weixin\CardManager\WeixinCardManager;
 use Weixin\IpManager\WeixinIpManager;
 use Weixin\JssdkManager\WeixinJssdkManager;
+use Weixin\DatacubeManager\WeixinDatacubeManager;
 
 /**
  * 微信公众平台的调用接口类.
@@ -201,6 +202,18 @@ class WeixinClient
         return $this->weixinJssdkManager;
     }
 
+    protected $weixinDatacubeManager;
+
+    /**
+     * GET WeixinDatacubeManager object.
+     *
+     * @return WeixinDatacubeManager
+     */
+    public function WeixinDatacubeManager()
+    {
+        return $this->weixinDatacubeManager;
+    }
+
     public function __construct($appid, $secret, $access_token = NULL, $refresh_token = NULL, $options = array())
     {
         $this->_appid = $appid;
@@ -236,6 +249,8 @@ class WeixinClient
         $this->weixinIpManager = new WeixinIpManager($this, $options);
         // 微信服务器JS管理
         $this->weixinJssdkManager = new WeixinJssdkManager($this, $options);
+        // 微信服务器数据统计管理
+        $this->weixinDatacubeManager = new WeixinDatacubeManager($this, $options);
     }
 
     /**
