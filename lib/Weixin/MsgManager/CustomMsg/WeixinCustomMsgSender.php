@@ -13,7 +13,7 @@ use Weixin\MsgManager\WeixinMsgManager;
  * 在24小时内不限制发送次数。
  * 此接口主要用于客服等有人工消息处理环节的功能，
  * 方便开发者为用户提供更加优质的服务。
- * 
+ *
  * @author guoyongrong <handsomegyr@gmail.com>
  */
 class WeixinCustomMsgSender
@@ -23,6 +23,18 @@ class WeixinCustomMsgSender
 
     private $_url = 'https://api.weixin.qq.com/cgi-bin/message/custom/send';
 
+    private $_kf_account = "";
+
+    /**
+     * 设定客服帐号
+     *
+     * @return string
+     */
+    public function setKfAccount($kf_account)
+    {
+        return $this->_kf_account;
+    }
+
     public function __construct(WeixinMsgManager $weixinMsgManager, $options = array())
     {
         $this->weixinMsgManager = $weixinMsgManager;
@@ -31,7 +43,7 @@ class WeixinCustomMsgSender
     /**
      * 发送消息
      * 该接口用于发送从iwebsite 微信模块发送过来的消息
-     * 
+     *
      * @param string $msg            
      * @return string
      */
@@ -52,7 +64,7 @@ class WeixinCustomMsgSender
 
     /**
      * 发送文本消息
-     * 
+     *
      * @param string $toUser            
      * @param string $content            
      * @return string
@@ -68,7 +80,7 @@ class WeixinCustomMsgSender
 
     /**
      * 发送图片消息
-     * 
+     *
      * @param string $toUser            
      * @param string $media_id            
      * @return string
@@ -84,7 +96,7 @@ class WeixinCustomMsgSender
 
     /**
      * 发送语音消息
-     * 
+     *
      * @param string $toUser            
      * @param string $media_id            
      * @return string
@@ -94,31 +106,35 @@ class WeixinCustomMsgSender
         $ret = array();
         $ret['touser'] = $toUser;
         $ret['msgtype'] = "voice";
-        $ret['image']["media_id"] = $media_id;
-        return json_encode($ret);
+        $ret['voice']["media_id"] = $media_id;
+        return $this->send($ret);
     }
 
     /**
      * 发送视频消息
-     * 
+     *
      * @param string $toUser            
      * @param string $media_id            
      * @param string $thumb_media_id            
+     * @param string $title            
+     * @param string $description            
      * @return string
      */
-    public function sendVideo($toUser, $media_id, $thumb_media_id)
+    public function sendVideo($toUser, $media_id, $thumb_media_id, $title, $description)
     {
         $ret = array();
         $ret['touser'] = $toUser;
         $ret['msgtype'] = "video";
-        $ret['image']["media_id"] = $media_id;
-        $ret['image']["thumb_media_id"] = $thumb_media_id;
+        $ret['video']['media_id'] = $media_id;
+        $ret['video']['thumb_media_id'] = $thumb_media_id;
+        $ret['video']['title'] = $title;
+        $ret['video']['description'] = $description;
         return $this->send($ret);
     }
 
     /**
      * 发送音乐消息
-     * 
+     *
      * @param string $toUser            
      * @param string $title            
      * @param string $description            
@@ -143,7 +159,7 @@ class WeixinCustomMsgSender
 
     /**
      * 发送图文消息
-     * 
+     *
      * @param string $toUser            
      * @param string $articles            
      * @return string
