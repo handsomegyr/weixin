@@ -22,6 +22,8 @@ use Weixin\MsgManager\WeixinMsgManager;
 class WeixinMassMsgSender
 {
 
+    public $is_to_all = false;
+
     protected $weixinMsgManager;
 
     private $_url = 'https://api.weixin.qq.com/cgi-bin/message/mass/';
@@ -66,6 +68,9 @@ class WeixinMassMsgSender
     {
         $ret = array();
         $ret['filter']['group_id'] = $group_id;
+        if (! empty($this->is_to_all)) {
+            $ret['filter']['is_to_all'] = $this->is_to_all;
+        }
         $ret['msgtype'] = 'text';
         $ret['text']['content'] = $content;
         $ret['text']['title'] = $title;
@@ -86,6 +91,9 @@ class WeixinMassMsgSender
     {
         $ret = array();
         $ret['filter']['group_id'] = $group_id;
+        if (! empty($this->is_to_all)) {
+            $ret['filter']['is_to_all'] = $this->is_to_all;
+        }
         $ret['msgtype'] = 'image';
         $ret['image']['media_id'] = $media_id;
         $ret['image']['title'] = $title;
@@ -106,6 +114,9 @@ class WeixinMassMsgSender
     {
         $ret = array();
         $ret['filter']['group_id'] = $group_id;
+        if (! empty($this->is_to_all)) {
+            $ret['filter']['is_to_all'] = $this->is_to_all;
+        }
         $ret['msgtype'] = 'voice';
         $ret['voice']['media_id'] = $media_id;
         $ret['voice']['title'] = $title;
@@ -126,6 +137,9 @@ class WeixinMassMsgSender
     {
         $ret = array();
         $ret['filter']['group_id'] = $group_id;
+        if (! empty($this->is_to_all)) {
+            $ret['filter']['is_to_all'] = $this->is_to_all;
+        }
         $ret['msgtype'] = 'mpvideo';
         $ret['mpvideo']['media_id'] = $media_id;
         $ret['mpvideo']['title'] = $title;
@@ -146,6 +160,9 @@ class WeixinMassMsgSender
     {
         $ret = array();
         $ret['filter']['group_id'] = $group_id;
+        if (! empty($this->is_to_all)) {
+            $ret['filter']['is_to_all'] = $this->is_to_all;
+        }
         $ret['msgtype'] = 'mpnews';
         $ret['mpnews']['media_id'] = $media_id;
         $ret['mpnews']['title'] = $title;
@@ -291,6 +308,28 @@ class WeixinMassMsgSender
             $json = json_encode($ret, JSON_UNESCAPED_UNICODE);
         }
         $rst = $this->weixinMsgManager->getWeixin()->post($this->_url . 'delete?access_token=' . $access_token, $json);
+        // 返回结果
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+
+    /**
+     * 预览接口【订阅号与服务号认证后均可用】
+     * 开发者可通过该接口发送消息给指定用户，在手机端查看消息的样式和排版。
+     *
+     * @param array $params            
+     * @return array
+     */
+    public function preview($params)
+    {
+        $access_token = $this->weixinMsgManager->getWeixin()->getToken();
+        if (is_array($params)) {
+            $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        }
+        $rst = $this->weixinMsgManager->getWeixin()->post($this->_url . 'preview?access_token=' . $access_token, $json);
         // 返回结果
         if (! empty($rst['errcode'])) {
             throw new WeixinException($rst['errmsg'], $rst['errcode']);
