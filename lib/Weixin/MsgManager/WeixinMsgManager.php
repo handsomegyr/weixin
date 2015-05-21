@@ -1,6 +1,7 @@
 <?php
 namespace Weixin\MsgManager;
 
+use Weixin\WeixinException;
 use Weixin\WeixinClient;
 use Weixin\MsgManager\ReplyMsg\WeixinReplyMsgSender;
 use Weixin\MsgManager\CustomMsg\WeixinCustomMsgSender;
@@ -275,9 +276,9 @@ class WeixinMsgManager
      */
     public function getCurrentAutoreplyInfo()
     {
-        $access_token = $this->weixinMsgManager->getWeixin()->getToken();
+        $access_token = $this->weixin->getToken();
         
-        $rst = $this->weixinMsgManager->getWeixin()->get($this->_url . 'get_current_autoreply_info?access_token=' . $access_token, array());
+        $rst = $this->weixin->get($this->_url . 'get_current_autoreply_info?access_token=' . $access_token, array());
         // 返回结果
         if (! empty($rst['errcode'])) {
             throw new WeixinException($rst['errmsg'], $rst['errcode']);
