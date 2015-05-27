@@ -143,4 +143,14 @@ class Poi
     {
         $this->poi_id = $poi_id;
     }
+    
+    public function set_available_state($available_state)
+    {
+        $this->available_state = $available_state;
+    }
+    
+    public function set_update_status($update_status)
+    {
+        $this->update_status = $update_status;
+    }
 }
