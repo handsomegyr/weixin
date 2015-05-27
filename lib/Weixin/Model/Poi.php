@@ -107,6 +107,16 @@ class Poi
      */
     public $avg_price = NULL;
 
+    /**
+     * 可用状态
+     */
+    public $available_state = 0;
+
+    /**
+     * 更新状态
+     */
+    public $update_status = 0;
+
     public function __construct($sid, $business_name, $branch_name, $province, $city, $district, $address, $telephone, array $categories, $offset_type, $longitude, $latitude, array $photo_list, $recommend, $special, $introduction, $open_time, $avg_price)
     {
         $this->sid = $sid; // 商户自己的 id，用于后续审核通过收到 poi_id 的通知时，做对应关系。请商户自己保证唯一识别性 否
