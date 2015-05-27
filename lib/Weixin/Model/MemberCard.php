@@ -63,6 +63,13 @@ class MemberCard extends CardBase
      */
     public $activate_url = NULL;
 
+    /**
+     * need_push_on_view
+     * true 为用户点击进入会员卡时是否推送事件。
+     * 否
+     */
+    public $need_push_on_view = NULL;
+
     public function __construct(BaseInfo $base_info, $supply_bonus, $supply_balance, $prerogative)
     {
         parent::__construct($base_info);
@@ -98,6 +105,11 @@ class MemberCard extends CardBase
         $this->activate_url = $activate_url;
     }
 
+    public function set_need_push_on_view($need_push_on_view)
+    {
+        $this->need_push_on_view = $need_push_on_view;
+    }
+
     protected function getParams()
     {
         $params = array();
@@ -124,6 +136,9 @@ class MemberCard extends CardBase
         }
         if ($this->activate_url != NULL) {
             $params['activate_url'] = $this->activate_url;
+        }
+        if ($this->need_push_on_view != NULL) {
+            $params['need_push_on_view'] = $this->need_push_on_view;
         }
         return $params;
     }

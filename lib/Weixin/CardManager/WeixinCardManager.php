@@ -34,6 +34,100 @@ class WeixinCardManager
     }
 
     /**
+     * 上传LOGO接口
+     * 开发者需调用该接口上传商户图标至微信服务器，获取相应 logo_url，用于卡券创建。
+     * 注意事项
+     * 1.上传的图片限制文件大小限制 1MB，像素为 300*300，支持 JPG 格式。
+     * 2.调用接口获取的 logo_url 进支持在微信相关业务下使用，否则会做相应处理。
+     * 接口调用请求说明
+     * 协议 https
+     * http 请求方式 POST/FROM
+     * 请求 Url https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=ACCESS_TOKEN
+     * POST 数据格式 json
+     * 请求参数说明
+     * 参数 说明 是否必填
+     * access_token 调用接口凭证 是
+     * buffer 文件的数据流是POST 数据
+     * 调用示例（使用 curl 命令，用 FORM 表单方式上传一个图片） ：
+     * curl –F buffer=@test.jpg
+     * 返回数据说明
+     * 返回正确的示例：
+     * {
+     * "errcode":0,
+     * "errmsg":"ok",
+     * {"url":"http://mmbiz.qpic.cn/mmbiz/iaL1LJM1mF9aRKPZJkmG8xXhiaHqkKSVMMWeN3hLut7X7hicFNjakmxibMLGWpXrEXB33367o7zHN0CwngnQY7zb7g/0"}
+     * }
+     * 返回错误的示例
+     * {"errcode":40009,"errmsg":"invalid image size"}
+     * 字段 说明
+     * url 商户 logo_url
+     * errcode 错误码，0 为正常
+     * errmsg 错误信息
+     *
+     * @throws Exception
+     * @return Ambigous <\Weixin\Http\mixed, multitype:, string, number, boolean, mixed>
+     */
+    public function uploadLogoUrl($logo)
+    {
+        $access_token = $this->weixin->getToken();
+        $params = array();
+        $params['access_token'] = $access_token;
+        $params['buffer'] = '@' . $logo;
+        $rst = $this->weixin->post('https://api.weixin.qq.com/cgi-bin/media/uploadimg', $params, true);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+
+    /**
+     * 创建卡券 ----获取颜色列表接口
+     * 接口说明
+     * 获得卡券的最新颜色列表，用于创建卡券。
+     * 接口调用请求说明
+     * 协议https
+     * http 请求方式GET / POST
+     * 请求Url https://api.weixin.qq.com/card/getcolors?access_token=TOKEN
+     * POST 数据格式json
+     * 请求参数说明
+     * 参数是否必须说明
+     * access_token 是调用接口凭证
+     * 返回数据说明
+     * 数据示例：
+     * {
+     * "errcode":0,
+     * "errmsg":"ok",
+     * "colors":[
+     * {"name":"Color010","value":"#61ad40"},
+     * {"name":"Color020","value":"#169d5c"},
+     * {"name":"Color030","value":"#239cda"}
+     * ]
+     * }
+     * 字段说明
+     * errcode 错误码，0 为正常
+     * errmsg 错误信息
+     * colors 列表
+     * name 可以填入的color 名称
+     * value 对应的颜色数值
+     *
+     * @return mixed
+     */
+    public function getcolors()
+    {
+        $params = array();
+        $access_token = $this->weixin->getToken();
+        $rst = $this->weixin->get($this->_url . 'getcolors?access_token=' . $access_token, $params);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+
+    /**
      * 创建卡券 ----创建卡券
      * 接口调用请求说明
      * 协议https
@@ -104,215 +198,6 @@ class WeixinCardManager
     }
 
     /**
-     * 创建卡券 ----批量导入门店信息
-     * 支持商户调用该接口批量导入/新建门店信息，获取门店ID。
-     * 注：通过该接口导入的门店信息将进入门店审核流程，审核期间可正常使用。
-     * 若导入的门店信息未通过审核，则会被剔除出门店列表。
-     * 接口调用请求说明
-     * 协议https
-     * http 请求方式POST
-     * 请求Url https://api.weixin.qq.com/card/location/batchadd?access_token=TOKEN
-     * POST 数据格式json
-     *
-     * 请求参数说明
-     * 参数是否必须说明
-     * access_token 是调用接口凭证
-     * POST 数据是Json 数据
-     * POST 数据
-     * 数据示例
-     * {"location_list":[
-     * {
-     * "business_name":"TIT 创意园1 号店",
-     * "province":"广东省",
-     * "city":"广州市",
-     * "district":"海珠区",
-     * "address":"中国广东省广州市海珠区艺苑路11 号",
-     * "telephone":"020-89772059",
-     * "category":"房产小区",
-     * "longitude":"115.32375",
-     * "latitude":"25.097486"
-     * },
-     * {
-     * "business_name":"TIT 创意园2 号店",
-     * "province":"广东省",
-     * "city":"广州市",
-     * "district":"海珠区",
-     * "address":"中国广东省广州市海珠区艺苑路12 号",
-     * "telephone":"020-89772059",
-     * "category":"房产小区",
-     * "longitude":"113.32375",
-     * "latitude":"23.097486"
-     * }]}
-     * 字段说明是否必填
-     * business_name 门店名称是
-     * province 门店所在的省是
-     * city 门店所在的市是
-     * district 门店所在的区是
-     * address 门店所在的详细街道地址是
-     * telephone 门店的电话是
-     * longitude 门店所在地理位置的经度是
-     * latitude 门店所在地理位置的纬度是
-     * 返回数据说明
-     * 导入成功示例：
-     * {
-     * "errcode":0,
-     * "errmsg":"ok",
-     * "location_id_list":[271262077,271262079]
-     * }
-     * 插入失败示例：
-     * {
-     * "errcode":0,
-     * "errmsg":"ok",
-     * "location_id_list":[271262077,-1]
-     * }
-     * 字段说明
-     * errcode 错误码，0 为正常。
-     * errmsg 错误信息。
-     * location_id 门店ID。插入失败的门店返回数值“-1”，请
-     * 核查必填字段后单独调用接口导入。
-     *
-     * @return mixed
-     */
-    public function locationBatchadd(array $location_list)
-    {
-        $params = array(
-            "location_list" => $location_list
-        );
-        $access_token = $this->weixin->getToken();
-        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
-        $rst = $this->weixin->post($this->_url . 'location/batchadd?access_token=' . $access_token, $json);
-        
-        if (! empty($rst['errcode'])) {
-            throw new WeixinException($rst['errmsg'], $rst['errcode']);
-        } else {
-            return $rst;
-        }
-    }
-
-    /**
-     * 创建卡券 ----拉取门店列表
-     * 获取在公众平台上申请创建的门店列表，用于创建卡券。
-     * 注：请按表格要求填写“门店信息导入表”。
-     * 接口调用请求说明
-     * 协议https
-     * http 请求方式POST
-     * 请求Url https://api.weixin.qq.com/card/location/batchget?access_token=TOKEN
-     * POST 数据格式json
-     * 请求参数说明
-     * 参数是否必须说明
-     * access_token 是调用接口凭证
-     * POST 数据是Json 数据
-     * POST 数据
-     * 数据示例：
-     * {
-     * "offset": 0,
-     * "count": 2
-     * }
-     * 字段说明
-     * offset 偏移量，0 开始
-     * count 拉取数量
-     * 注：“offset”，“count”都为0 时默认拉取全部门店。
-     * 返回数据说明
-     * 数据示例：
-     * { "errcode": 0,
-     * "errmsg": "ok",
-     * "location_list": [
-     * {
-     * "location_id": 493,
-     * "name": "steventao home",
-     * "phone": "020-12345678",
-     * "address": "广东省广州市番禺区广东省广州市番禺区南浦大道",
-     * "longitude": 113.280212402,
-     * "latitude": 23.0350666046
-     * },
-     * {
-     * "location_id": 468,
-     * "name": "TIT 创意园B4",
-     * "phone": "020-12345678",
-     * "address": "广东省广州市海珠区",
-     * "longitude": 113.325248718,
-     * "latitude": 23.1008300781
-     * }
-     * ],
-     * "count": 2
-     * }
-     * 字段说明
-     * errcode 错误码，0 为正常
-     * errmsg 错误信息
-     * location_list
-     * location_id 门店ID
-     * name 门店名称
-     * phone 联系电话
-     * address 详细地址
-     * longitude 经度
-     * latitude 纬度
-     * count 拉取门店数量
-     *
-     * @return mixed
-     */
-    public function locationBatchget($offset = 0, $count = 0)
-    {
-        $params = array();
-        $params['offset'] = $offset;
-        $params['count'] = $count;
-        
-        $access_token = $this->weixin->getToken();
-        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
-        $rst = $this->weixin->post($this->_url . 'location/batchget?access_token=' . $access_token, $json);
-        
-        if (! empty($rst['errcode'])) {
-            throw new WeixinException($rst['errmsg'], $rst['errcode']);
-        } else {
-            return $rst;
-        }
-    }
-
-    /**
-     * 创建卡券 ----获取颜色列表接口
-     * 接口说明
-     * 获得卡券的最新颜色列表，用于创建卡券。
-     * 接口调用请求说明
-     * 协议https
-     * http 请求方式GET / POST
-     * 请求Url https://api.weixin.qq.com/card/getcolors?access_token=TOKEN
-     * POST 数据格式json
-     * 请求参数说明
-     * 参数是否必须说明
-     * access_token 是调用接口凭证
-     * 返回数据说明
-     * 数据示例：
-     * {
-     * "errcode":0,
-     * "errmsg":"ok",
-     * "colors":[
-     * {"name":"Color010","value":"#61ad40"},
-     * {"name":"Color020","value":"#169d5c"},
-     * {"name":"Color030","value":"#239cda"}
-     * ]
-     * }
-     * 字段说明
-     * errcode 错误码，0 为正常
-     * errmsg 错误信息
-     * colors 列表
-     * name 可以填入的color 名称
-     * value 对应的颜色数值
-     *
-     * @return mixed
-     */
-    public function getcolors()
-    {
-        $params = array();
-        $access_token = $this->weixin->getToken();
-        $rst = $this->weixin->get($this->_url . 'location/batchget?access_token=' . $access_token, $params);
-        
-        if (! empty($rst['errcode'])) {
-            throw new WeixinException($rst['errmsg'], $rst['errcode']);
-        } else {
-            return $rst;
-        }
-    }
-
-    /**
      * 卡券投放 ----生成卡券二维码
      * 创建卡券后，商户可通过接口生成一张卡券二维码供用户扫码后添加卡券到卡包。
      * 自定义code 的卡券调用接口时，post 数据中需指定code，非自定义code 不需指定，指定openid
@@ -341,8 +226,9 @@ class WeixinCardManager
      * "card_id": "pFS7Fjg8kV1IdDz01r4SQwMkuCKc",
      * "code": "198374613512",
      * "openid": "oFS7Fjl0WsZ9AMZqrI80nbIq8xrA",
-     * " expire_seconds": "1800"
-     * " is_unique_code": false
+     * "expire_seconds": "1800",
+     * "is_unique_code": false,
+     * "outer_id" : 1
      * }
      * }
      * }
@@ -352,6 +238,8 @@ class WeixinCardManager
      * openid 指定领取者的openid，只有该用户能领取。bind_openid 字段为true 的卡券必须填写，非自定义openid 不必填写。否
      * expire_seconds 指定二维码的有效时间，范围是60 ~ 1800 秒。不填默认为永久有效。否
      * is_unique_code 指定下发二维码，生成的二维码随机分配一个code，领取后不可再次扫描。填写true 或false。默认false。否
+     * balance 红包余额， 以分为单位。 红包类型必填 （LUCKY_MONEY） ，其他卡券类型不填。否
+     * outer_id 领取场景值，用于领取渠道的数据统计，默认值为 0，字段类型为整型。用户领取卡券后触发的事件推送中会带上此自定义场景值。
      * 返回数据说明
      * 数据示例：
      * {
@@ -372,7 +260,7 @@ class WeixinCardManager
      *
      * @return mixed
      */
-    public function qrcodeCreate($card_id, $code = "", $openid = "", $expire_seconds = null, $is_unique_code = false)
+    public function qrcodeCreate($card_id, $code = "", $openid = "", $expire_seconds = null, $is_unique_code = false, $balance = 0, $outer_id = 0)
     {
         $params = array();
         $params['action_name'] = "QR_CARD";
@@ -389,9 +277,55 @@ class WeixinCardManager
         }
         $params['action_info']['card']['is_unique_code'] = $is_unique_code;
         
+        if (! empty($balance)) {
+            $params['action_info']['card']['balance'] = $balance;
+        }
+        $params['action_info']['card']['outer_id'] = $outer_id;
+        
         $access_token = $this->weixin->getToken();
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
         $rst = $this->weixin->post($this->_url . 'qrcode/create?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+
+    /**
+     * 获取api_ticket
+     * api_ticket 是用于调用微信 JSAPI 的临时票据， 有效期为 7200 秒， 通过 access_token来获取。
+     * 注：由于获取 api_ticket 的 api 调用次数非常有限，频繁刷新 api_ticket 会导致 api 调用受限，影响自身业务，开发者需在自己的服务存储与更新 api_ticket。
+     * 接口调用请求说明
+     * 协议 https
+     * http 请求方式 GET
+     * 请求 Url https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=wx_card
+     * POST 数据格式 json
+     * 请求参数说明
+     * 参数 是否必须 说明
+     * access_token 是 调用接口凭证
+     * 返回数据说明
+     * 数据示例：
+     * 微信卡券接口文档
+     * {
+     * "errcode":0,
+     * "errmsg":"ok",
+     * "ticket":"bxLdikRXVbTPdHSM05e5u5sUoXNKdvsdshFKA",
+     * "expires_in":7200
+     * }
+     * 字段 说明
+     * errcode 错误码，0 为正常
+     * errmsg 错误信息
+     * ticket api_ticket，签名中所需凭证
+     * expires_in 有效时间
+     */
+    public function getApiTicket()
+    {
+        $params = array();
+        $params['type'] = 'wx_card';
+        $access_token = $this->weixin->getToken();
+        $rst = $this->weixin->get('https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' . $access_token, $params);
         
         if (! empty($rst['errcode'])) {
             throw new WeixinException($rst['errmsg'], $rst['errcode']);
@@ -1049,6 +983,58 @@ class WeixinCardManager
     }
 
     /**
+     * 库存修改接口
+     *  接口说明
+     * 增减某张卡券的库存。
+     *  接口调用请求说明
+     * 协议 https
+     * http 请求方式 POST
+     * 请求 Url https://api.weixin.qq.com/card/modifystock?access_token=TOKEN
+     * POST 数据格式 json
+     *  请求参数说明
+     * 参数 是否必须 说明
+     * access_token 是 调用接口凭证
+     * POST 数据 是 Json 数据
+     *  POST 数据
+     * 数据示例：
+     * 微信卡券接口文档
+     * {
+     * "card_id": "xxxx_card_id",
+     * "increase_stock_value": 1231231,
+     * "reduce_stock_value": 1231231
+     * }
+     * 字段 说明
+     * card_id 卡券 ID。
+     * increase_stock_value 增加多少库存，可以不填或填 0
+     * reduce_stock_value 减少多少库存，可以不填或填 0
+     *  返回数据说明
+     * 数据示例：
+     * {
+     * "errcode":0,
+     * "errmsg":"ok"
+     * }
+     * 字段 说明
+     * errcode 错误码，0 为正常
+     * errmsg 错误信
+     */
+    public function modifyStock($card_id, $increase_stock_value = 0, $reduce_stock_value = 0)
+    {
+        $params = array();
+        $params['card_id'] = $card_id;
+        $params['increase_stock_value'] = $increase_stock_value;
+        $params['reduce_stock_value'] = $reduce_stock_value;
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'card/modifystock?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+
+    /**
      * 开发者权限 ----设置测试用户白名单
      *
      * 接口说明
@@ -1151,7 +1137,7 @@ class WeixinCardManager
      *
      * @return mixed
      */
-    public function membercardActivate($membership_number, $code, $init_bonus = 0, $init_balance = 0, $card_id = "")
+    public function membercardActivate($membership_number, $code, $card_id, $init_bonus = 0, $init_balance = 0, $bonus_url = "", $balance_url = "")
     {
         $params = array();
         $params['membership_number'] = $membership_number;
@@ -1159,8 +1145,18 @@ class WeixinCardManager
         if (! empty($card_id)) {
             $params['card_id'] = $card_id;
         }
-        $params['init_bonus'] = $init_bonus;
-        $params['init_balance'] = $init_balance;
+        if (! empty($init_bonus)) {
+            $params['init_bonus'] = $init_bonus;
+        }
+        if (! empty($init_balance)) {
+            $params['init_balance'] = $init_balance;
+        }
+        if (! empty($bonus_url)) {
+            $params['bonus_url'] = $bonus_url;
+        }
+        if (! empty($balance_url)) {
+            $params['balance_url'] = $balance_url;
+        }
         
         $access_token = $this->weixin->getToken();
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
@@ -1224,7 +1220,7 @@ class WeixinCardManager
      *
      * @return mixed
      */
-    public function membercardUpdateuser($code, $add_bonus = 0, $record_bonus = "", $add_balance = 0, $record_balance = "", $card_id = "")
+    public function membercardUpdateuser($code, $card_id, $add_bonus = 0, $record_bonus = "", $add_balance = 0, $record_balance = "")
     {
         $params = array();
         $params['code'] = $code;
@@ -1293,7 +1289,7 @@ class WeixinCardManager
      *
      * @return mixed
      */
-    public function movieticketUpdateuser($code, $ticket_class, $show_time, $duration, $screening_room, array $seat_number, $card_id = "")
+    public function movieticketUpdateuser($code, $card_id, $ticket_class, $show_time, $duration, $screening_room, array $seat_number)
     {
         $params = array();
         $params['code'] = $code;
@@ -1366,15 +1362,13 @@ class WeixinCardManager
      *
      * @return mixed
      */
-    public function boardingpassCheckin($code, $passenger_name, $class, $etkt_bnr, $seat = "", $gate = "", $boarding_time = "", $qrcode_data = "", $is_cancel = false, $card_id = "")
+    public function boardingpassCheckin($code, $card_id, $passenger_name, $class, $etkt_bnr, $seat = "", $qrcode_data = "", $is_cancel = false)
     {
         $params = array();
         $params['code'] = $code;
         $params['passenger_name'] = $passenger_name;
         $params['class'] = $class;
         $params['seat'] = $seat;
-        $params['gate'] = $gate;
-        $params['boarding_time'] = $boarding_time;
         $params['etkt_bnr'] = $etkt_bnr;
         $params['qrcode_data'] = $qrcode_data;
         $params['is_cancel'] = $is_cancel;
@@ -1394,6 +1388,79 @@ class WeixinCardManager
         }
     }
 
+    /**
+     * 会议门票
+     * 更新会议门票接口
+     *  接口说明
+     * 支持调用“更新会议门票”接口 update 入场时间、区域、座位等信息。
+     *  接口调用请求说明
+     * 协议 https
+     * http 请求方式 POST
+     * 微信卡券接口文档
+     * 请求 Url https://api.weixin.qq.com/card/meetingticket/updateuser?access_token=TOKEN
+     * POST 数据格式 json
+     *  请求参数说明
+     * 参数 是否必须 说明
+     * access_token 是 调用接口凭证
+     * POST 数据 是 Json 数据
+     *  POST 数据
+     * 数据示例：
+     * {
+     * "code": "717523732898",
+     * "card_id": "pXch-jvdwkJjY7evUFV-sGsoMl7A",
+     * "zone" : "C 区",
+     * "entrance" : "东北门",
+     * "seat_number" : "2 排 15 号"
+     * }
+     * 字段 说明 是否必填
+     * code 用户的门票唯一序列号 是
+     * card_id
+     * 要 更 新 门 票 序 列 号 所 述 的 card_id ， 生 成 券 时
+     * use_custom_code 填写 true 时必填。
+     * 否
+     * zone 区域 否
+     * entrance 入口 否
+     * seat_number 座位号。 否
+     * begin_time 开场时间 是
+     * end_time 结束时间 是
+     *  返回数据说明
+     * 数据示例：
+     * {
+     * "errcode":0,
+     * "errmsg":"ok"
+     * }
+     * 字段 说明
+     * errcode 错误码，0 为正常
+     * 微信卡券接口文档
+     * errmsg 错误信息
+     *
+     * @return mixed
+     */
+    public function meetingticketUpdateuser($code, $card_id, $begin_time, $end_time, $zone, $entrance, $seat_number)
+    {
+        $params = array();
+        $params['code'] = $code;
+        $params['begin_time'] = $begin_time;
+        $params['end_time'] = $end_time;
+        $params['zone'] = $zone;
+        $params['entrance'] = $entrance;
+        $params['seat_number'] = $seat_number;
+    
+        if (! empty($card_id)) {
+            $params['card_id'] = $card_id;
+        }
+        
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'meetingticket/updateuser?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+    
     /**
      * 特殊卡票 ----红包----更新红包金额
      * 接口说明
@@ -1565,40 +1632,88 @@ class WeixinCardManager
             return $rst;
         }
     }
-
+    
+    // ------------以下接口在V2.0废弃了----------------
+    // ------------以下门店接口废弃 改用POI门店接口----------------
+    
     /**
-     * 获取api_ticket
-     * api_ticket 是用于调用微信 JSAPI 的临时票据， 有效期为 7200 秒， 通过 access_token来获取。
-     * 注：由于获取 api_ticket 的 api 调用次数非常有限，频繁刷新 api_ticket 会导致 api 调用受限，影响自身业务，开发者需在自己的服务存储与更新 api_ticket。
+     * 创建卡券 ----批量导入门店信息
+     * 支持商户调用该接口批量导入/新建门店信息，获取门店ID。
+     * 注：通过该接口导入的门店信息将进入门店审核流程，审核期间可正常使用。
+     * 若导入的门店信息未通过审核，则会被剔除出门店列表。
      * 接口调用请求说明
-     * 协议 https
-     * http 请求方式 GET
-     * 请求 Url https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=wx_card
-     * POST 数据格式 json
+     * 协议https
+     * http 请求方式POST
+     * 请求Url https://api.weixin.qq.com/card/location/batchadd?access_token=TOKEN
+     * POST 数据格式json
+     *
      * 请求参数说明
-     * 参数 是否必须 说明
-     * access_token 是 调用接口凭证
+     * 参数是否必须说明
+     * access_token 是调用接口凭证
+     * POST 数据是Json 数据
+     * POST 数据
+     * 数据示例
+     * {"location_list":[
+     * {
+     * "business_name":"TIT 创意园1 号店",
+     * "province":"广东省",
+     * "city":"广州市",
+     * "district":"海珠区",
+     * "address":"中国广东省广州市海珠区艺苑路11 号",
+     * "telephone":"020-89772059",
+     * "category":"房产小区",
+     * "longitude":"115.32375",
+     * "latitude":"25.097486"
+     * },
+     * {
+     * "business_name":"TIT 创意园2 号店",
+     * "province":"广东省",
+     * "city":"广州市",
+     * "district":"海珠区",
+     * "address":"中国广东省广州市海珠区艺苑路12 号",
+     * "telephone":"020-89772059",
+     * "category":"房产小区",
+     * "longitude":"113.32375",
+     * "latitude":"23.097486"
+     * }]}
+     * 字段说明是否必填
+     * business_name 门店名称是
+     * province 门店所在的省是
+     * city 门店所在的市是
+     * district 门店所在的区是
+     * address 门店所在的详细街道地址是
+     * telephone 门店的电话是
+     * longitude 门店所在地理位置的经度是
+     * latitude 门店所在地理位置的纬度是
      * 返回数据说明
-     * 数据示例：
-     * 微信卡券接口文档
+     * 导入成功示例：
      * {
      * "errcode":0,
      * "errmsg":"ok",
-     * "ticket":"bxLdikRXVbTPdHSM05e5u5sUoXNKdvsdshFKA",
-     * "expires_in":7200
+     * "location_id_list":[271262077,271262079]
      * }
-     * 字段 说明
-     * errcode 错误码，0 为正常
-     * errmsg 错误信息
-     * ticket api_ticket，签名中所需凭证
-     * expires_in 有效时间
+     * 插入失败示例：
+     * {
+     * "errcode":0,
+     * "errmsg":"ok",
+     * "location_id_list":[271262077,-1]
+     * }
+     * 字段说明
+     * errcode 错误码，0 为正常。
+     * errmsg 错误信息。
+     * location_id 门店ID。插入失败的门店返回数值“-1”，请
+     * 核查必填字段后单独调用接口导入。
+     *
+     * @return mixed
      */
-    public function getApiTicket()
+    public function locationBatchadd(array $location_list)
     {
-        $params = array();
-        $params['type'] = 'wx_card';
+        $params = array(
+            "location_list" => $location_list
+        );
         $access_token = $this->weixin->getToken();
-        $rst = $this->weixin->get('https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' . $access_token, $params);
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'location/batchadd?access_token=' . $access_token, $json);
         
         if (! empty($rst['errcode'])) {
             throw new WeixinException($rst['errmsg'], $rst['errcode']);
@@ -1608,46 +1723,75 @@ class WeixinCardManager
     }
 
     /**
-     * 上传LOGO接口
-     * 开发者需调用该接口上传商户图标至微信服务器，获取相应 logo_url，用于卡券创建。
-     * 注意事项
-     * 1.上传的图片限制文件大小限制 1MB，像素为 300*300，支持 JPG 格式。
-     * 2.调用接口获取的 logo_url 进支持在微信相关业务下使用，否则会做相应处理。
+     * 创建卡券 ----拉取门店列表
+     * 获取在公众平台上申请创建的门店列表，用于创建卡券。
+     * 注：请按表格要求填写“门店信息导入表”。
      * 接口调用请求说明
-     * 协议 https
-     * http 请求方式 POST/FROM
-     * 请求 Url https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=ACCESS_TOKEN
-     * POST 数据格式 json
+     * 协议https
+     * http 请求方式POST
+     * 请求Url https://api.weixin.qq.com/card/location/batchget?access_token=TOKEN
+     * POST 数据格式json
      * 请求参数说明
-     * 参数 说明 是否必填
-     * access_token 调用接口凭证 是
-     * buffer 文件的数据流是POST 数据
-     * 调用示例（使用 curl 命令，用 FORM 表单方式上传一个图片） ：
-     * curl –F buffer=@test.jpg
-     * 返回数据说明
-     * 返回正确的示例：
+     * 参数是否必须说明
+     * access_token 是调用接口凭证
+     * POST 数据是Json 数据
+     * POST 数据
+     * 数据示例：
      * {
-     * "errcode":0,
-     * "errmsg":"ok",
-     * {"url":"http://mmbiz.qpic.cn/mmbiz/iaL1LJM1mF9aRKPZJkmG8xXhiaHqkKSVMMWeN3hLut7X7hicFNjakmxibMLGWpXrEXB33367o7zHN0CwngnQY7zb7g/0"}
+     * "offset": 0,
+     * "count": 2
      * }
-     * 返回错误的示例
-     * {"errcode":40009,"errmsg":"invalid image size"}
-     * 字段 说明
-     * url 商户 logo_url
+     * 字段说明
+     * offset 偏移量，0 开始
+     * count 拉取数量
+     * 注：“offset”，“count”都为0 时默认拉取全部门店。
+     * 返回数据说明
+     * 数据示例：
+     * { "errcode": 0,
+     * "errmsg": "ok",
+     * "location_list": [
+     * {
+     * "location_id": 493,
+     * "name": "steventao home",
+     * "phone": "020-12345678",
+     * "address": "广东省广州市番禺区广东省广州市番禺区南浦大道",
+     * "longitude": 113.280212402,
+     * "latitude": 23.0350666046
+     * },
+     * {
+     * "location_id": 468,
+     * "name": "TIT 创意园B4",
+     * "phone": "020-12345678",
+     * "address": "广东省广州市海珠区",
+     * "longitude": 113.325248718,
+     * "latitude": 23.1008300781
+     * }
+     * ],
+     * "count": 2
+     * }
+     * 字段说明
      * errcode 错误码，0 为正常
      * errmsg 错误信息
+     * location_list
+     * location_id 门店ID
+     * name 门店名称
+     * phone 联系电话
+     * address 详细地址
+     * longitude 经度
+     * latitude 纬度
+     * count 拉取门店数量
      *
-     * @throws Exception
-     * @return Ambigous <\Weixin\Http\mixed, multitype:, string, number, boolean, mixed>
+     * @return mixed
      */
-    public function uploadLogoUrl($logo)
+    public function locationBatchget($offset = 0, $count = 0)
     {
-        $access_token = $this->weixin->getToken();
         $params = array();
-        $params['access_token'] = $access_token;
-        $params['buffer'] = '@' . $logo;
-        $rst = $this->weixin->post('https://api.weixin.qq.com/cgi-bin/media/uploadimg', $params, true);
+        $params['offset'] = $offset;
+        $params['count'] = $count;
+        
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'location/batchget?access_token=' . $access_token, $json);
         
         if (! empty($rst['errcode'])) {
             throw new WeixinException($rst['errmsg'], $rst['errcode']);

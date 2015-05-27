@@ -15,8 +15,14 @@ class BaseInfo
     public $logo_url = NULL;
 
     /**
-     * code_type code 码展示类型。是
-     * "CODE_TYPE_TEXT"，文本"CODE_TYPE_BARCODE"，一维码"CODE_TYPE_QRCODE"，二维码
+     * code_type
+     * code 码展示类型。
+     * 是
+     * "CODE_TYPE_TEXT"，文本
+     * "CODE_TYPE_BARCODE"，一维码
+     * "CODE_TYPE_QRCODE"，二维码；
+     * “CODE_TYPE_ONLY_QRCODE”,二维码无 code 显示；
+     * “CODE_TYPE_ONLY_BARCODE”,一维码无 code 显示；
      * 是
      */
     public $code_type = NULL;
@@ -51,24 +57,10 @@ class BaseInfo
 
     /**
      * notice
-     * 使用提醒，字数上限为9 个汉字。（一句话描述，展示在首页，示例：请出示二维码核销卡券）
+     * 使用提醒，字数上限为12 个汉字。（一句话描述，展示在首页，示例：请出示二维码核销卡券）
      * 是
      */
     public $notice = NULL;
-
-    /**
-     * service_phone
-     * 客服电话。
-     * 否
-     */
-    public $service_phone = NULL;
-
-    /**
-     * source
-     * 第三方来源名，例如同程旅游、格瓦拉。
-     * 否
-     */
-    public $source = NULL;
 
     /**
      * description
@@ -78,17 +70,29 @@ class BaseInfo
     public $description = NULL;
 
     /**
-     * use_limit
-     * 每人使用次数限制。
-     * 否
+     * date_info
+     * 使用日期，有效期的信息
+     * 是
+     *
+     * @var DateInfo
      */
-    public $use_limit = NULL;
+    public $date_info = NULL;
 
     /**
-     * get_limit
-     * 每人最大领取次数，不填写默认等于quantity。否
+     * sku
+     * 商品信息。
+     * 是
+     *
+     * @var Sku
      */
-    public $get_limit = NULL;
+    public $sku = NULL;
+
+    /**
+     * location_id_list
+     * 门店位置ID。商户需在mp 平台上录入门店信息或调用批量导入门店信息接口获取门店位置ID。
+     * 否
+     */
+    public $location_id_list = NULL;
 
     /**
      * use_custom_code
@@ -119,44 +123,31 @@ class BaseInfo
     public $can_give_friend = true;
 
     /**
-     * location_id_list
-     * 门店位置ID。商户需在mp 平台上录入门店信息或调用批量导入门店信息接口获取门店位置ID。
-     * 否
+     * get_limit
+     * 每人最大领取次数，不填写默认等于quantity。否
      */
-    public $location_id_list = NULL;
+    public $get_limit = NULL;
 
     /**
-     * date_info
-     * 使用日期，有效期的信息
-     * 是
-     *
-     * @var DateInfo
-     */
-    public $date_info = NULL;
-
-    /**
-     * sku
-     * 商品信息。
-     * 是
-     *
-     * @var Sku
-     */
-    public $sku = NULL;
-
-    /**
-     * url_name_type
-     * 商户自定义cell 名称
-     * 否
-     * "URL_NAME_TYPE_TAKE_AWAY"，外卖
-     * "URL_NAME_TYPE_RESERVATION"，在线预订
-     * "URL_NAME_TYPE_USE_IMMEDIATELY"，立即使用
-     * "URL_NAME_TYPE_APPOINTMENT”,在线预约
-     * URL_NAME_TYPE_EXCHANGE,在线兑换
-     * URL_NAME_TYPE_MALL,在线商城
-     * "URL_NAME_TYPE_VEHICLE_INFORMATION，车辆信息（该权限申请及说明详见Q&A)
+     * service_phone
+     * 客服电话。
      * 否
      */
-    public $url_name_type = NULL;
+    public $service_phone = NULL;
+
+    /**
+     * source
+     * 第三方来源名，例如同程旅游、格瓦拉。
+     * 否
+     */
+    public $source = NULL;
+
+    /**
+     * custom_url_name
+     * 商户自定义入口名称，与custom_url 字段共同使用，长度限制在 5 个汉字内。
+     * 否
+     */
+    public $custom_url_name = NULL;
 
     /**
      * custom_url
@@ -166,18 +157,32 @@ class BaseInfo
     public $custom_url = NULL;
 
     /**
-     * promotion_url_name_type
-     * 特殊权限自定义 cell，权限需单独开通。
+     * custom_url_sub_title
+     * 显示在入口右侧的 tips，长度限制在 6 个汉字内。
      * 否
      */
-    public $promotion_url_name_type = NULL;
+    public $custom_url_sub_title = NULL;
+
+    /**
+     * promotion_url_name
+     * 营销场景的自定义入口。
+     * 否
+     */
+    public $promotion_url_name = NULL;
 
     /**
      * promotion_url
-     * 特殊权限自定义 url 地址， 支持卡券页内跳转,跳转页面内容需与cell 名称保持一致。（权限需单独开通）
+     * 入口跳转外链的地址链接。
      * 否
      */
     public $promotion_url = NULL;
+
+    /**
+     * promotion_url_sub_title
+     * 显示在入口右侧的 tips，长度限制在 6 个汉字内。
+     * 否
+     */
+    public $promotion_url_sub_title = NULL;
 
     /**
      * status
@@ -221,6 +226,36 @@ class BaseInfo
      * 否
      */
     public $shake_slogan_sub_title = NULL;
+    
+    // -----以下字段在v2.0废弃了--------------
+    /**
+     * use_limit
+     * 每人使用次数限制。
+     * 否
+     */
+    public $use_limit = NULL;
+
+    /**
+     * url_name_type
+     * 商户自定义cell 名称
+     * 否
+     * "URL_NAME_TYPE_TAKE_AWAY"，外卖
+     * "URL_NAME_TYPE_RESERVATION"，在线预订
+     * "URL_NAME_TYPE_USE_IMMEDIATELY"，立即使用
+     * "URL_NAME_TYPE_APPOINTMENT”,在线预约
+     * URL_NAME_TYPE_EXCHANGE,在线兑换
+     * URL_NAME_TYPE_MALL,在线商城
+     * "URL_NAME_TYPE_VEHICLE_INFORMATION，车辆信息（该权限申请及说明详见Q&A)
+     * 否
+     */
+    public $url_name_type = NULL;
+
+    /**
+     * promotion_url_name_type
+     * 特殊权限自定义 cell，权限需单独开通。
+     * 否
+     */
+    public $promotion_url_name_type = NULL;
 
     public function __construct($logo_url, $brand_name, $code_type, $title, $color, $notice, $description, DateInfo $date_info, Sku $sku)
     {
@@ -245,28 +280,9 @@ class BaseInfo
         $this->sub_title = $sub_title;
     }
 
-    public function set_service_phone($service_phone)
+    public function set_location_id_list($location_id_list)
     {
-        $this->service_phone = $service_phone;
-    }
-
-    public function set_source($source)
-    {
-        $this->source = $source;
-    }
-
-    public function set_use_limit($use_limit)
-    {
-        if (! is_int($use_limit))
-            exit("use_limit must be integer");
-        $this->use_limit = $use_limit;
-    }
-
-    public function set_get_limit($get_limit)
-    {
-        if (! is_int($get_limit))
-            exit("get_limit must be integer");
-        $this->get_limit = $get_limit;
+        $this->location_id_list = $location_id_list;
     }
 
     public function set_use_custom_code($use_custom_code)
@@ -289,14 +305,26 @@ class BaseInfo
         $this->can_give_friend = $can_give_friend;
     }
 
-    public function set_location_id_list($location_id_list)
+    public function set_get_limit($get_limit)
     {
-        $this->location_id_list = $location_id_list;
+        if (! is_int($get_limit))
+            exit("get_limit must be integer");
+        $this->get_limit = $get_limit;
     }
 
-    public function set_url_name_type($url_name_type)
+    public function set_service_phone($service_phone)
     {
-        $this->url_name_type = $url_name_type;
+        $this->service_phone = $service_phone;
+    }
+
+    public function set_source($source)
+    {
+        $this->source = $source;
+    }
+
+    public function set_custom_url_name($custom_url_name)
+    {
+        $this->custom_url_name = $custom_url_name;
     }
 
     public function set_custom_url($custom_url)
@@ -304,14 +332,24 @@ class BaseInfo
         $this->custom_url = $custom_url;
     }
 
-    public function set_promotion_url_name_type($promotion_url_name_type)
+    public function set_custom_url_sub_title($custom_url_sub_title)
     {
-        $this->promotion_url_name_type = $promotion_url_name_type;
+        $this->custom_url_sub_title = $custom_url_sub_title;
+    }
+
+    public function set_promotion_url_name($promotion_url_name)
+    {
+        $this->promotion_url_name = $promotion_url_name;
     }
 
     public function set_promotion_url($promotion_url)
     {
         $this->promotion_url = $promotion_url;
+    }
+
+    public function set_promotion_url_sub_title($promotion_url_sub_title)
+    {
+        $this->promotion_url_sub_title = $promotion_url_sub_title;
     }
 
     public function set_card_id($card_id)
@@ -324,6 +362,9 @@ class BaseInfo
         $this->status = $status;
     }
 
+    /**
+     * 以下字段都是用以微信摇一摇的时候设置
+     */
     public function set_get_custom_code_mode($get_custom_code_mode)
     {
         $this->get_custom_code_mode = $get_custom_code_mode;
@@ -342,6 +383,24 @@ class BaseInfo
     public function set_shake_slogan_sub_title($shake_slogan_sub_title)
     {
         $this->shake_slogan_sub_title = $shake_slogan_sub_title;
+    }
+    
+    // -----以下字段在v2.0废弃了--------------
+    public function set_use_limit($use_limit)
+    {
+        if (! is_int($use_limit))
+            exit("use_limit must be integer");
+        $this->use_limit = $use_limit;
+    }
+
+    public function set_url_name_type($url_name_type)
+    {
+        $this->url_name_type = $url_name_type;
+    }
+
+    public function set_promotion_url_name_type($promotion_url_name_type)
+    {
+        $this->promotion_url_name_type = $promotion_url_name_type;
     }
 
     public function getParams()
@@ -368,20 +427,17 @@ class BaseInfo
         if ($this->notice != NULL) {
             $params['notice'] = $this->notice;
         }
-        if ($this->service_phone != NULL) {
-            $params['service_phone'] = $this->service_phone;
-        }
-        if ($this->source != NULL) {
-            $params['source'] = $this->source;
-        }
         if ($this->description != NULL) {
             $params['description'] = $this->description;
         }
-        if ($this->use_limit != NULL) {
-            $params['use_limit'] = $this->use_limit;
+        if ($this->date_info != NULL) {
+            $params['date_info'] = $this->date_info->getParams();
         }
-        if ($this->get_limit != NULL) {
-            $params['get_limit'] = $this->get_limit;
+        if ($this->sku != NULL) {
+            $params['sku'] = $this->sku->getParams();
+        }
+        if ($this->location_id_list != NULL) {
+            $params['location_id_list'] = $this->location_id_list;
         }
         if ($this->use_custom_code != NULL) {
             $params['use_custom_code'] = $this->use_custom_code;
@@ -395,29 +451,37 @@ class BaseInfo
         if ($this->can_give_friend != NULL) {
             $params['can_give_friend'] = $this->can_give_friend;
         }
-        if ($this->location_id_list != NULL) {
-            $params['location_id_list'] = $this->location_id_list;
+        if ($this->get_limit != NULL) {
+            $params['get_limit'] = $this->get_limit;
         }
-        if ($this->date_info != NULL) {
-            $params['date_info'] = $this->date_info->getParams();
+        if ($this->service_phone != NULL) {
+            $params['service_phone'] = $this->service_phone;
         }
-        if ($this->sku != NULL) {
-            $params['sku'] = $this->sku->getParams();
+        if ($this->source != NULL) {
+            $params['source'] = $this->source;
         }
-        if ($this->url_name_type != NULL) {
-            $params['url_name_type'] = $this->url_name_type;
+        if ($this->custom_url_name != NULL) {
+            $params['custom_url_name'] = $this->custom_url_name;
         }
         if ($this->custom_url != NULL) {
             $params['custom_url'] = $this->custom_url;
         }
-        
-        if ($this->promotion_url_name_type != NULL) {
-            $params['promotion_url_name_type'] = $this->promotion_url_name_type;
+        if ($this->custom_url_sub_title != NULL) {
+            $params['custom_url_sub_title'] = $this->custom_url_sub_title;
+        }
+        if ($this->promotion_url_name != NULL) {
+            $params['promotion_url_name'] = $this->promotion_url_name;
         }
         if ($this->promotion_url != NULL) {
             $params['promotion_url'] = $this->promotion_url;
         }
+        if ($this->promotion_url_sub_title != NULL) {
+            $params['promotion_url_sub_title'] = $this->promotion_url_sub_title;
+        }
         
+        /**
+         * 以下字段都是用以微信摇一摇的时候设置
+         */
         if ($this->get_custom_code_mode != NULL) {
             $params['get_custom_code_mode'] = $this->get_custom_code_mode;
         }
@@ -429,6 +493,17 @@ class BaseInfo
         }
         if ($this->shake_slogan_sub_title != NULL) {
             $params['shake_slogan_sub_title'] = $this->shake_slogan_sub_title;
+        }
+        
+        // -----以下字段在v2.0废弃了--------------
+        if ($this->use_limit != NULL) {
+            $params['use_limit'] = $this->use_limit;
+        }
+        if ($this->url_name_type != NULL) {
+            $params['url_name_type'] = $this->url_name_type;
+        }
+        if ($this->promotion_url_name_type != NULL) {
+            $params['promotion_url_name_type'] = $this->promotion_url_name_type;
         }
         return $params;
     }

@@ -30,14 +30,14 @@ class BoardingPass extends CardBase
 
     /**
      * departure_time
-     * 起飞时间，上限为17 个汉字。
+     * 起飞时间。Unix 时间戳格式。
      * 否
      */
     public $departure_time = NULL;
 
     /**
      * landing_time
-     * 降落时间，上限为17 个汉字。
+     * 降落时间。Unix 时间戳格式。
      * 否
      */
     public $landing_time = NULL;

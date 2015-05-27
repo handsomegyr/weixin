@@ -11,6 +11,6 @@ class LuckyMoney extends CardBase
     {
         parent::__construct($base_info);
         $this->create_key = 'lucky_money';
-        $this->card_type = self::$CARD_TYPE["LUCKY_MONEY；"];
+        $this->card_type = self::$CARD_TYPE["LUCKY_MONEY"];
     }
 }
