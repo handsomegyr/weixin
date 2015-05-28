@@ -3,7 +3,7 @@ namespace Weixin\PoiManager;
 
 use Weixin\WeixinException;
 use Weixin\WeixinClient;
-use Weixin\Model\Poi;
+
 
 /**
  * POI 门店管理接口
@@ -168,7 +168,7 @@ class WeixinPoiManager
      *
      * @return mixed
      */
-    public function addPoi(Poi $poi)
+    public function addPoi(Weixin\Model\Poi $poi)
     {
         $base_info = array();
         $base_info['sid'] = $poi->sid;
