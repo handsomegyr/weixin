@@ -226,15 +226,15 @@ class BaseInfo
      * 否
      */
     public $shake_slogan_sub_title = NULL;
-    
-    // -----以下字段在v2.0废弃了--------------
+
     /**
      * use_limit
      * 每人使用次数限制。
      * 否
      */
     public $use_limit = NULL;
-
+    
+    // -----以下字段在v2.0废弃了--------------
     /**
      * url_name_type
      * 商户自定义cell 名称
@@ -384,15 +384,14 @@ class BaseInfo
     {
         $this->shake_slogan_sub_title = $shake_slogan_sub_title;
     }
-    
-    // -----以下字段在v2.0废弃了--------------
+
     public function set_use_limit($use_limit)
     {
         if (! is_int($use_limit))
             exit("use_limit must be integer");
         $this->use_limit = $use_limit;
     }
-
+    // -----以下字段在v2.0废弃了--------------
     public function set_url_name_type($url_name_type)
     {
         $this->url_name_type = $url_name_type;
@@ -495,10 +494,10 @@ class BaseInfo
             $params['shake_slogan_sub_title'] = $this->shake_slogan_sub_title;
         }
         
-        // -----以下字段在v2.0废弃了--------------
         if ($this->use_limit != NULL) {
             $params['use_limit'] = $this->use_limit;
         }
+        // -----以下字段在v2.0废弃了--------------
         if ($this->url_name_type != NULL) {
             $params['url_name_type'] = $this->url_name_type;
         }
