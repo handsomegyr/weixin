@@ -16,7 +16,7 @@ class Signature
 
     public function get_signature()
     {
-        sort($this->data);
+        sort($this->data, SORT_STRING);
         return sha1(implode($this->data));
     }
 }
