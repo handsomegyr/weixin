@@ -170,49 +170,52 @@ class MemberCard extends CardBase
         $this->custom_cell2 = $custom_cell2;
     }
     
-    public function getParams()
+    protected function getParams()
     {
         $params = array();
-        $params['card_type'] = $this->card_type;
-        $params[$this->create_key]['base_info'] = $this->base_info->getParams();
-        $params[$this->create_key]['supply_bonus'] = $this->supply_bonus;
-        $params[$this->create_key]['supply_balance'] = $this->supply_balance;
+        
+        if ($this->supply_bonus != NULL) {
+            $params['supply_bonus'] = $this->supply_bonus;
+        }
+        if ($this->supply_balance != NULL) {
+            $params['supply_balance'] = $this->supply_balance;
+        }        
         if ($this->custom_field1 != NULL) {
-            $params[$this->create_key]['custom_field1'] = $this->custom_field1->getParams();
+            $params['custom_field1'] = $this->custom_field1->getParams();
         }
         if ($this->custom_field2 != NULL) {
-            $params[$this->create_key]['custom_field2'] = $this->custom_field2->getParams();
+            $params['custom_field2'] = $this->custom_field2->getParams();
         }
         if ($this->custom_field3 != NULL) {
-            $params[$this->create_key]['custom_field3'] = $this->custom_field3->getParams();
+            $params['custom_field3'] = $this->custom_field3->getParams();
         }
         if ($this->bonus_cleared != NULL) {
-            $params[$this->create_key]['bonus_cleared'] = $this->bonus_cleared;
+            $params['bonus_cleared'] = $this->bonus_cleared;
         }
         if ($this->bonus_rules != NULL) {
-            $params[$this->create_key]['bonus_rules'] = $this->bonus_rules;
+            $params['bonus_rules'] = $this->bonus_rules;
         }
         if ($this->balance_rules != NULL) {
-            $params[$this->create_key]['balance_rules'] = $this->balance_rules;
+            $params['balance_rules'] = $this->balance_rules;
         }
         if ($this->prerogative != NULL) {
-            $params[$this->create_key]['prerogative'] = $this->prerogative;
+            $params['prerogative'] = $this->prerogative;
         }
         if ($this->bind_old_card_url != NULL) {
-            $params[$this->create_key]['bind_old_card_url'] = $this->bind_old_card_url;
+            $params['bind_old_card_url'] = $this->bind_old_card_url;
         }
         if ($this->activate_url != NULL) {
-            $params[$this->create_key]['activate_url'] = $this->activate_url;
+            $params['activate_url'] = $this->activate_url;
         }
         if ($this->need_push_on_view != NULL) {
-            $params[$this->create_key]['need_push_on_view'] = $this->need_push_on_view;
+            $params['need_push_on_view'] = $this->need_push_on_view;
         }
         if ($this->custom_cell1 != NULL) {
-            $params[$this->create_key]['custom_cell1'] = $this->custom_cell1->getParams();
+            $params['custom_cell1'] = $this->custom_cell1->getParams();
         }
         if ($this->custom_cell2 != NULL) {
-            $params[$this->create_key]['custom_cell2'] = $this->custom_cell2->getParams();
+            $params['custom_cell2'] = $this->custom_cell2->getParams();
         }
-        return array('card' => $params);
+        return $params;
     }
 }
