@@ -1116,14 +1116,39 @@ class WeixinCardManager
      * "init_balance": 200,
      * "membership_number": "AAA00000001",
      * "code": "12312313",
-     * "card_id": "xxxx_card_id"
+     * "card_id": "xxxx_card_id",
+     * "custom_field_value1": "xxxxx",
+     * }
+     * 或
+     * {
+     * "bonus": “www.xxxx.com”,
+     * "balance": “www.xxxx.com”,
+     * "membership_number": "AAA00000001",
+     * "code": "12312313",
+     * "card_id": "xxxx_card_id"，
+     * "custom_field_value1": "xxxxx",
      * }
      * 字段说明
      * init_bonus 初始积分，不填为0。
      * init_balance 初始余额，不填为0。
+     * bonus_url 积分查询，仅用于init_bonus无法同步的情况填写，调转外链查询积分 否
+     * balance_url 余额查询，仅用于init_balance无法同步的情况填写，调转外链查询积分。 否
      * membership_number 必填，会员卡编号，作为序列号显示在用户的卡包里。
      * code 创建会员卡时获取的code。
      * card_id 卡券ID。自定义code 的会员卡必填card_id，非自定义code 的会员卡不必填。
+     * activate_begin_time 激活后的有效起始时间。若不填写默认以创建时的data_info 为准。时间戳格式。 否
+     * activate_end_time 激活后的有效截至时间。若不填写默认以创建时的data_info 为准。时间戳格式。 否
+     * init_custom_field_value1 创建时字段custom_field1定义类型的初始值，限制为4个汉字，12字节。
+     * init_custom_field_value2 创建时字段custom_field2定义类型的初始值，限制为4个汉字，12字节。
+     * init_custom_field_value3 创建时字段custom_field3定义类型的初始值，限制为4个汉字，12字节。
+     * (说明custom_field1定义类型的初始值
+     * FIELD_NAME_TYPE_LEVE 等级
+     * FIELD_NAME_TYPE_COUPON 优惠券
+     * FIELD_NAME_TYPE_MILEAGE 里程
+     * FIELD_NAME_TYPE_STAMP 印花
+     * FIELD_NAME_TYPE_ACHIEVEMENT 成就
+     * FIELD_NAME_TYPE_DISCOUNT 折扣)
+     *
      * 返回数据说明
      * 数据示例：
      * {
@@ -1137,7 +1162,7 @@ class WeixinCardManager
      *
      * @return mixed
      */
-    public function membercardActivate($membership_number, $code, $card_id, $init_bonus = 0, $init_balance = 0, $bonus_url = "", $balance_url = "")
+    public function membercardActivate($membership_number, $code, $card_id, $init_bonus = 0, $init_balance = 0, $init_custom_field_value1 = "", $init_custom_field_value2 = "", $init_custom_field_value3 = "", $bonus_url = "", $balance_url = "", $activate_begin_time = "", $activate_end_time = "")
     {
         $params = array();
         $params['membership_number'] = $membership_number;
@@ -1145,11 +1170,14 @@ class WeixinCardManager
         if (! empty($card_id)) {
             $params['card_id'] = $card_id;
         }
-        if (! empty($init_bonus)) {
-            $params['init_bonus'] = $init_bonus;
+        if (! empty($init_custom_field_value1)) {
+            $params['init_custom_field_value1'] = $init_custom_field_value1;
         }
-        if (! empty($init_balance)) {
-            $params['init_balance'] = $init_balance;
+        if (! empty($init_custom_field_value2)) {
+            $params['init_custom_field_value2'] = $init_custom_field_value2;
+        }
+        if (! empty($init_custom_field_value3)) {
+            $params['init_custom_field_value3'] = $init_custom_field_value3;
         }
         if (! empty($bonus_url)) {
             $params['bonus_url'] = $bonus_url;
@@ -1157,7 +1185,15 @@ class WeixinCardManager
         if (! empty($balance_url)) {
             $params['balance_url'] = $balance_url;
         }
+        if (! empty($activate_begin_time)) {
+            $params['activate_begin_time'] = $activate_begin_time;
+        }
+        if (! empty($activate_end_time)) {
+            $params['activate_end_time'] = $activate_end_time;
+        }
         
+        $params['init_bonus'] = $init_bonus;
+        $params['init_balance'] = $init_balance;
         $access_token = $this->weixin->getToken();
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
         $rst = $this->weixin->post($this->_url . 'membercard/activate?access_token=' . $access_token, $json);
@@ -1201,6 +1237,9 @@ class WeixinCardManager
      * add_balance 需要变更的余额，扣除金额用“-”表示。单位为分否
      * record_balance 商家自定义金额消耗记录，不超过14 个汉字。否
      * card_id 要消耗序列号所述的card_id。自定义code 的会员卡必填。否
+     * custom_field_value1 创建时字段custom_field1义类型的最新数值，限制为4个汉字，12字节。 否
+     * custom_field_value2 创建时字段custom_field2义类型的最新数值，限制为4个汉字，12字节。 否
+     * custom_field_value3 创建时字段custom_field3义类型的最新数值，限制为4个汉字，12字节。 否
      * 返回数据说明
      * 数据示例：
      * {
@@ -1220,7 +1259,7 @@ class WeixinCardManager
      *
      * @return mixed
      */
-    public function membercardUpdateuser($code, $card_id, $add_bonus = 0, $record_bonus = "", $add_balance = 0, $record_balance = "")
+    public function membercardUpdateuser($code, $card_id, $add_bonus = 0, $record_bonus = "", $add_balance = 0, $record_balance = "", $custom_field_value1 = "", $custom_field_value2 = "", $custom_field_value3 = "")
     {
         $params = array();
         $params['code'] = $code;
@@ -1231,10 +1270,196 @@ class WeixinCardManager
         $params['record_bonus'] = $record_bonus;
         $params['add_balance'] = $add_balance;
         $params['record_balance'] = $record_balance;
-        
+        if (! empty($custom_field_value1)) {
+            $params['custom_field_value1'] = $custom_field_value1;
+        }
+        if (! empty($custom_field_value2)) {
+            $params['custom_field_value2'] = $custom_field_value2;
+        }
+        if (! empty($custom_field_value3)) {
+            $params['custom_field_value3'] = $custom_field_value3;
+        }
         $access_token = $this->weixin->getToken();
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
         $rst = $this->weixin->post($this->_url . 'membercard/updateuser?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+
+    /**
+     * 特殊卡票 ----会员卡----会员卡公告接口
+     * 接口说明
+     * 支持开发者调用该接口对指定会员卡用户下发公告消息。
+     * 注：每个用户每个月仅能收到4条公告消息。
+     *
+     * 接口调用请求说明
+     * 协议
+     * https http
+     * 请求方式 POST
+     * 请求Url https://api.weixin.qq.com/card/announcement/send?access_token=TOKEN
+     * POST数据格式 json
+     *
+     * 数据示例：
+     * {"code": "12312313",
+     * "card_id":"p1Pj9jr90_SQRaVqYI239Ka1erkI",
+     * "text": "会员日特大优惠",
+     * "url": "www.xxx.com",
+     * "thumb_url": "www.xxx.com",
+     * "end_time": 1422724261,
+     * }
+     * 字段说明是否必填
+     * code 会员卡初始code码。是
+     * card_id 展示公告的卡券ID。 是
+     * end_time 公告展示截止时间 ，Unix时间戳格式，从调用公告接口时刻起不超过七天时长。 是
+     * text 公告文字，不超过16个汉字。否url点击公告跳转的URL。否
+     * thumb_url 可配置公告过期后出现在历史公告列表中的图片。需调用上传logo接口获取URL。 否
+     */
+    public function announcementSend($code, $card_id, $end_time, $text = "", $thumb_url = "")
+    {
+        $params = array();
+        $params['code'] = $code;
+        $params['card_id'] = $card_id;
+        $params['end_time'] = $end_time;
+        if (! empty($text)) {
+            $params['text'] = $text;
+        }
+        if (! empty($thumb_url)) {
+            $params['thumb_url'] = $thumb_url;
+        }
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'announcement/send?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+
+    /**
+     * 特殊卡票 ----会员卡----更新公告接口
+     * 接口说明
+     * 支持开发者对某条公告进行内容更新。更新公告不会有消息提醒，且更新时间不能后延。
+     *
+     * 接口调用请求说明
+     * 协议https http
+     * 请求方式 POST
+     * 请求Url https://api.weixin.qq.com/card/announcement/update?access_token=TOKEN
+     * POST数据格式 json
+     *
+     * 数据示例：
+     * {
+     * "create_time":1430141581,
+     * "code": "12312313",
+     * "card_id":"p1Pj9jr90_SQRaVqYI239Ka1erkI",
+     * "text": "会员日特大优惠",
+     * "url": "www.xxx.com",
+     * "thumb_url": "www.xxx.com",
+     * "end_time": 1422724261,
+     * }
+     *
+     * 字段说明是否必填
+     * code 卡券的code码。是
+     * card_id 展示公告的卡券ID。是
+     * create_time 以创建公告的时间作为更新该用户手上会员卡公告的唯一标识。是
+     * text 公告文字，不超过16个汉字。否
+     * url 点击公告跳转的URL。否
+     * thumb_url 可配置公告过期后出现在历史公告列表中的图片。需调用上传logo接口获取URL。否
+     * end_time 公告展示截止时间，Unix时间戳格式。特别注意，更新公告截止时间仅支持前移，不支持后延。否
+     * close 填写true则关闭该公告展示。默认为false。特别注意，公告更新为关闭状态后不可恢复。否
+     */
+    public function announcementUpdate($code, $card_id, $create_time, $text = '', $url = '', $thumb_url = '', $end_time = '', $close = FALSE)
+    {
+        $params = array();
+        $params['code'] = $code;
+        $params['card_id'] = $card_id;
+        $params['create_time'] = $create_time;
+        if (! empty($text)) {
+            $params['text'] = $text;
+        }
+        if (! empty($url)) {
+            $params['url'] = $url;
+        }
+        if (! empty($thumb_url)) {
+            $params['thumb_url'] = $thumb_url;
+        }
+        if (! empty($end_time)) {
+            $params['end_time'] = $end_time;
+        }
+        if (! empty($close)) {
+            $params['close'] = $close;
+        }
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'announcement/update?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+
+    /**
+     * 特殊卡票 ----会员卡----短信投放会员卡
+     *
+     * 接口说明
+     * 支持商户调用该接口生成可拉起会员卡领取页面的URL。仅限于将URL嵌入短信中，用于投放会员卡。
+     * 开发者注意事项
+     * 1）该接口权限级别较高，需邮件weixincard@tencent.com申请权限。申请需提供appid及需要调起会员卡的cardid。
+     * 2）新增字段outer_id，支持商户将自定义场景值填入，实现短信渠道投放卡券的数据统计。例：设置短信拉起卡包接口中的outer_id字段值为1，
+     * 当用户通过短信链接领取卡券时，会触发带有相应场景值（<OuterId>1</OuterId>）的事件推送。
+     *
+     * 接口调用请求说明
+     * 协议https http请求方式POST
+     * 请求Url https://api.weixin.qq.com/card/sms/geturl?access_token=TOKEN
+     * POST数据格式 json
+     *
+     * 接口请求说明
+     * 数据示例：
+     * {
+     * "card_id":"pXch-joPiv-iPCSa7qjxEYSbivCg",
+     * "code":"237968569845",
+     * "outer_id" : 1
+     * }
+     *
+     * 字段说明是否必填
+     * card_id生成卡券时获得的card_id。是
+     * code卡券code码，自定义code为必填。否
+     * outer_id领取场景值，用于领取渠道的数据统计，默认值为0。字段类型为整型。否
+     *
+     * 字段返回说明
+     * {
+     * "errcode":0,
+     * "errmsg":"ok",
+     * "url":http://w.url.cn/s/AfXtbyv，
+     * "url":"weixin://cardpackage/?encrystr=Q2fS4IbnFr6RF44Wz7BqUS70xz01UYY3Ng3lQeIcmyW79GWc4Cdb1XJhcj0BhAZUXIu4wC-pFnBJqzN_hRFHfA_Xxi5uCbUQEWdndWfxR18"
+     * }
+     *
+     * 字段说明是否必填
+     * err_msg ok ，调用成功
+     * system error，系统错误
+     * missing required fields，缺少必填字段
+     * url 嵌入短信中发送给用户的url，返回长链和短链均可调起原生领卡页面。
+     */
+    public function smsGeturl($card_id, $code = '', $outer_id = 0)
+    {
+        $params = array();
+        $params['card_id'] = $card_id;
+        if (! empty($code)) {
+            $params['code'] = $code;
+        }
+        if (! empty($outer_id)) {
+            $params['outer_id'] = $outer_id;
+        }
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'sms/geturl?access_token=' . $access_token, $json);
         
         if (! empty($rst['errcode'])) {
             throw new WeixinException($rst['errmsg'], $rst['errcode']);
@@ -1445,7 +1670,7 @@ class WeixinCardManager
         $params['zone'] = $zone;
         $params['entrance'] = $entrance;
         $params['seat_number'] = $seat_number;
-    
+        
         if (! empty($card_id)) {
             $params['card_id'] = $card_id;
         }
@@ -1460,7 +1685,7 @@ class WeixinCardManager
             return $rst;
         }
     }
-    
+
     /**
      * 特殊卡票 ----红包----更新红包金额
      * 接口说明
