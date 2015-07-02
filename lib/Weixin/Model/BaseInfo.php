@@ -187,6 +187,17 @@ class BaseInfo
     /**
      * status
      * 1：待审核，2：审核失败，3：通过审核， 4：已删除（飞机票的status 字段为1：正常2：已删除）
+     *
+     * //v2.0改成以下值
+     * “CARD_STATUS_NOT_VERIFY”,
+     * 待审核
+     * “CARD_STATUS_VERIFY_FALL”,
+     * 审核失败
+     * “CARD_STATUS_VERIFY_OK”，
+     * 通过审核
+     * “CARD_STATUS_USER_DELETE” ，
+     * 卡券被用户删除
+     * “CARD_STATUS_USER_DISPATCH”，在公众平台投放过的卡券
      */
     public $status = NULL;
 
