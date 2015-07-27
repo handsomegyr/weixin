@@ -24,25 +24,25 @@ class MemberCard extends CardBase
     /**
      * custom_field1
      * 自定义会员信息类目，会员卡激活后显示
-     * 
+     *
      * 否
      */
     public $custom_field1 = NULL;
-    
+
     /**
      * custom_field2
      * 自定义会员信息类目，会员卡激活后显示
      * 否
      */
     public $custom_field2 = NULL;
-    
+
     /**
      * custom_field3
      * 自定义会员信息类目，会员卡激活后显示
      * 否
      */
     public $custom_field3 = NULL;
-    
+
     /**
      * bonus_cleared
      * 积分清零规则
@@ -77,27 +77,26 @@ class MemberCard extends CardBase
      * 否
      */
     public $bind_old_card_url = NULL;
-    
+
     /**
      * need_push_on_view
      * true为用户点击进入会员卡时是否推送事件。详情见六、进入会员卡事件推送。
      * 否
      */
     public $need_push_on_view = NULL;
-    
+
     /**
      * 会员卡类型专属营销入口，会员卡激活前后均显示。
      * 否
      */
     public $custom_cell1 = NULL;
-    
+
     /**
      * 会员卡类型专属营销入口，会员卡激活前后均显示。
      * 否
      */
     public $custom_cell2 = NULL;
-    
-    
+
     /**
      * activate_url
      * 激活会员卡的url，与“bind_old_card_url”字段二选一必填。
@@ -139,47 +138,45 @@ class MemberCard extends CardBase
     {
         $this->activate_url = $activate_url;
     }
-    
+
     public function set_custom_field1(CustomField $custom_field1)
     {
         $this->custom_field1 = $custom_field1;
     }
-    
+
     public function set_custom_field2(CustomField $custom_field2)
     {
         $this->custom_field2 = $custom_field2;
     }
-    
+
     public function set_custom_field3(CustomField $custom_field3)
     {
         $this->custom_field3 = $custom_field3;
     }
-    
+
     public function set_need_push_on_view($need_push_on_view)
     {
         $this->need_push_on_view = $need_push_on_view;
     }
-    
+
     public function set_custom_cell1(CustomCell $custom_cell1)
     {
         $this->custom_cell1 = $custom_cell1;
     }
-    
+
     public function set_custom_cell2(CustomCell $custom_cell2)
     {
         $this->custom_cell2 = $custom_cell2;
     }
-    
+
     protected function getParams()
     {
         $params = array();
         
-        if ($this->supply_bonus != NULL) {
-            $params['supply_bonus'] = $this->supply_bonus;
-        }
-        if ($this->supply_balance != NULL) {
-            $params['supply_balance'] = $this->supply_balance;
-        }        
+        $params['supply_bonus'] = $this->supply_bonus;
+        
+        $params['supply_balance'] = $this->supply_balance;
+        
         if ($this->custom_field1 != NULL) {
             $params['custom_field1'] = $this->custom_field1->getParams();
         }
