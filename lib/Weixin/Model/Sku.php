@@ -26,10 +26,15 @@ class Sku
     {
         $params = array();
         
-        if ($this->quantity != NULL) {
+        if ($this->isNotNull($this->quantity)) {
             $params['quantity'] = $this->quantity;
         }
         
         return $params;
+    }
+
+    protected function isNotNull($var)
+    {
+        return ! is_null($var);
     }
 }

@@ -42,10 +42,10 @@ class ScenicTicket extends CardBase
     {
         $params = array();
         
-        if ($this->ticket_class != NULL) {
+        if ($this->isNotNull($this->ticket_class)) {
             $params['ticket_class'] = $this->ticket_class;
         }
-        if ($this->guide_url != NULL) {
+        if ($this->isNotNull($this->guide_url)) {
             $params['guide_url'] = $this->guide_url;
         }
         return $params;

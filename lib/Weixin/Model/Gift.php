@@ -25,7 +25,7 @@ class Gift extends CardBase
     protected function getParams()
     {
         $params = array();
-        if ($this->gift != NULL) {
+        if ($this->isNotNull($this->gift)) {
             $params['gift'] = $this->gift;
         }
         return $params;

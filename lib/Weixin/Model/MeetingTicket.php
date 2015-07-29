@@ -38,7 +38,7 @@ class MeetingTicket extends CardBase
     {
         $params = array();
         
-        if ($this->map_url != NULL) {
+        if ($this->isNotNull($this->map_url)) {
             $params['map_url'] = $this->map_url;
         }
         return $params;

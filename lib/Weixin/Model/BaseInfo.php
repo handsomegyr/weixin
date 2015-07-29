@@ -416,105 +416,110 @@ class BaseInfo
     public function getParams()
     {
         $params = array();
-        if ($this->logo_url != NULL) {
+        if ($this->isNotNull($this->logo_url)) {
             $params['logo_url'] = $this->logo_url;
         }
-        if ($this->code_type != NULL) {
+        if ($this->isNotNull($this->code_type)) {
             $params['code_type'] = $this->code_type;
         }
-        if ($this->brand_name != NULL) {
+        if ($this->isNotNull($this->brand_name)) {
             $params['brand_name'] = $this->brand_name;
         }
-        if ($this->title != NULL) {
+        if ($this->isNotNull($this->title)) {
             $params['title'] = $this->title;
         }
-        if ($this->sub_title != NULL) {
+        if ($this->isNotNull($this->sub_title)) {
             $params['sub_title'] = $this->sub_title;
         }
-        if ($this->color != NULL) {
+        if ($this->isNotNull($this->color)) {
             $params['color'] = $this->color;
         }
-        if ($this->notice != NULL) {
+        if ($this->isNotNull($this->notice)) {
             $params['notice'] = $this->notice;
         }
-        if ($this->description != NULL) {
+        if ($this->isNotNull($this->description)) {
             $params['description'] = $this->description;
         }
-        if ($this->date_info != NULL) {
+        if ($this->isNotNull($this->date_info)) {
             $params['date_info'] = $this->date_info->getParams();
         }
-        if ($this->sku != NULL) {
+        if ($this->isNotNull($this->sku)) {
             $params['sku'] = $this->sku->getParams();
         }
-        if ($this->location_id_list != NULL) {
+        if ($this->isNotNull($this->location_id_list)) {
             $params['location_id_list'] = $this->location_id_list;
         }
-        if ($this->use_custom_code != NULL) {
+        if ($this->isNotNull($this->use_custom_code)) {
             $params['use_custom_code'] = $this->use_custom_code;
         }
-        if ($this->bind_openid != NULL) {
+        if ($this->isNotNull($this->bind_openid)) {
             $params['bind_openid'] = $this->bind_openid;
         }
-        if ($this->can_share != NULL) {
+        if ($this->isNotNull($this->can_share)) {
             $params['can_share'] = $this->can_share;
         }
-        if ($this->can_give_friend != NULL) {
+        if ($this->isNotNull($this->can_give_friend)) {
             $params['can_give_friend'] = $this->can_give_friend;
         }
-        if ($this->get_limit != NULL) {
+        if ($this->isNotNull($this->get_limit)) {
             $params['get_limit'] = $this->get_limit;
         }
-        if ($this->service_phone != NULL) {
+        if ($this->isNotNull($this->service_phone)) {
             $params['service_phone'] = $this->service_phone;
         }
-        if ($this->source != NULL) {
+        if ($this->isNotNull($this->source)) {
             $params['source'] = $this->source;
         }
-        if ($this->custom_url_name != NULL) {
+        if ($this->isNotNull($this->custom_url_name)) {
             $params['custom_url_name'] = $this->custom_url_name;
         }
-        if ($this->custom_url != NULL) {
+        if ($this->isNotNull($this->custom_url)) {
             $params['custom_url'] = $this->custom_url;
         }
-        if ($this->custom_url_sub_title != NULL) {
+        if ($this->isNotNull($this->custom_url_sub_title)) {
             $params['custom_url_sub_title'] = $this->custom_url_sub_title;
         }
-        if ($this->promotion_url_name != NULL) {
+        if ($this->isNotNull($this->promotion_url_name)) {
             $params['promotion_url_name'] = $this->promotion_url_name;
         }
-        if ($this->promotion_url != NULL) {
+        if ($this->isNotNull($this->promotion_url)) {
             $params['promotion_url'] = $this->promotion_url;
         }
-        if ($this->promotion_url_sub_title != NULL) {
+        if ($this->isNotNull($this->promotion_url_sub_title)) {
             $params['promotion_url_sub_title'] = $this->promotion_url_sub_title;
         }
         
         /**
          * 以下字段都是用以微信摇一摇的时候设置
          */
-        if ($this->get_custom_code_mode != NULL) {
+        if ($this->isNotNull($this->get_custom_code_mode)) {
             $params['get_custom_code_mode'] = $this->get_custom_code_mode;
         }
-        if ($this->can_shake != NULL) {
+        if ($this->isNotNull($this->can_shake)) {
             $params['can_shake'] = $this->can_shake;
         }
-        if ($this->shake_slogan_title != NULL) {
+        if ($this->isNotNull($this->shake_slogan_title)) {
             $params['shake_slogan_title'] = $this->shake_slogan_title;
         }
-        if ($this->shake_slogan_sub_title != NULL) {
+        if ($this->isNotNull($this->shake_slogan_sub_title)) {
             $params['shake_slogan_sub_title'] = $this->shake_slogan_sub_title;
         }
         
-        if ($this->use_limit != NULL) {
+        if ($this->isNotNull($this->use_limit)) {
             $params['use_limit'] = $this->use_limit;
         }
         // -----以下字段在v2.0废弃了--------------
-        if ($this->url_name_type != NULL) {
+        if ($this->isNotNull($this->url_name_type)) {
             $params['url_name_type'] = $this->url_name_type;
         }
-        if ($this->promotion_url_name_type != NULL) {
+        if ($this->isNotNull($this->promotion_url_name_type)) {
             $params['promotion_url_name_type'] = $this->promotion_url_name_type;
         }
         return $params;
+    }
+
+    protected function isNotNull($var)
+    {
+        return ! is_null($var);
     }
 }

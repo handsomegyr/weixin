@@ -25,7 +25,7 @@ class Discount extends CardBase
     protected function getParams()
     {
         $params = array();
-        if ($this->discount != NULL) {
+        if ($this->isNotNull($this->discount)) {
             $params['discount'] = $this->discount;
         }
         return $params;

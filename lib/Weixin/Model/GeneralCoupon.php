@@ -25,7 +25,7 @@ class GeneralCoupon extends CardBase
     protected function getParams()
     {
         $params = array();
-        if ($this->default_detail != NULL) {
+        if ($this->isNotNull($this->default_detail)) {
             $params['default_detail'] = $this->default_detail;
         }
         return $params;

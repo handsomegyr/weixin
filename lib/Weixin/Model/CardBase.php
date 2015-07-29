@@ -69,4 +69,9 @@ abstract class CardBase
         }
         return $params;
     }
+
+    protected function isNotNull($var)
+    {
+        return ! is_null($var);
+    }
 }

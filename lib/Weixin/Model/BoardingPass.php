@@ -116,31 +116,31 @@ class BoardingPass extends CardBase
     {
         $params = array();
         
-        if ($this->from != NULL) {
+        if ($this->isNotNull($this->from)) {
             $params['from'] = $this->from;
         }
-        if ($this->to != NULL) {
+        if ($this->isNotNull($this->to)) {
             $params['to'] = $this->to;
         }
-        if ($this->flight != NULL) {
+        if ($this->isNotNull($this->flight)) {
             $params['flight'] = $this->flight;
         }
-        if ($this->departure_time != NULL) {
+        if ($this->isNotNull($this->departure_time)) {
             $params['departure_time'] = $this->departure_time;
         }
-        if ($this->landing_time != NULL) {
+        if ($this->isNotNull($this->landing_time)) {
             $params['landing_time'] = $this->landing_time;
         }
-        if ($this->check_in_url != NULL) {
+        if ($this->isNotNull($this->check_in_url)) {
             $params['check_in_url'] = $this->check_in_url;
         }
-        if ($this->gate != NULL) {
+        if ($this->isNotNull($this->gate)) {
             $params['gate'] = $this->gate;
         }
-        if ($this->boarding_time != NULL) {
+        if ($this->isNotNull($this->boarding_time)) {
             $params['boarding_time'] = $this->boarding_time;
         }
-        if ($this->air_model != NULL) {
+        if ($this->isNotNull($this->air_model)) {
             $params['air_model'] = $this->air_model;
         }
         return $params;

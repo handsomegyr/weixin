@@ -172,45 +172,46 @@ class MemberCard extends CardBase
     protected function getParams()
     {
         $params = array();
-        
-        $params['supply_bonus'] = $this->supply_bonus;
-        
-        $params['supply_balance'] = $this->supply_balance;
-        
-        if ($this->custom_field1 != NULL) {
+        if ($this->isNotNull($this->supply_bonus)) {
+            $params['supply_bonus'] = $this->supply_bonus;
+        }
+        if ($this->isNotNull($this->supply_balance)) {
+            $params['supply_balance'] = $this->supply_balance;
+        }
+        if ($this->isNotNull($this->custom_field1)) {
             $params['custom_field1'] = $this->custom_field1->getParams();
         }
-        if ($this->custom_field2 != NULL) {
+        if ($this->isNotNull($this->custom_field2)) {
             $params['custom_field2'] = $this->custom_field2->getParams();
         }
-        if ($this->custom_field3 != NULL) {
+        if ($this->isNotNull($this->custom_field3)) {
             $params['custom_field3'] = $this->custom_field3->getParams();
         }
-        if ($this->bonus_cleared != NULL) {
+        if ($this->isNotNull($this->bonus_cleared)) {
             $params['bonus_cleared'] = $this->bonus_cleared;
         }
-        if ($this->bonus_rules != NULL) {
+        if ($this->isNotNull($this->bonus_rules)) {
             $params['bonus_rules'] = $this->bonus_rules;
         }
-        if ($this->balance_rules != NULL) {
+        if ($this->isNotNull($this->balance_rules)) {
             $params['balance_rules'] = $this->balance_rules;
         }
-        if ($this->prerogative != NULL) {
+        if ($this->isNotNull($this->prerogative)) {
             $params['prerogative'] = $this->prerogative;
         }
-        if ($this->bind_old_card_url != NULL) {
+        if ($this->isNotNull($this->bind_old_card_url)) {
             $params['bind_old_card_url'] = $this->bind_old_card_url;
         }
-        if ($this->activate_url != NULL) {
+        if ($this->isNotNull($this->activate_url)) {
             $params['activate_url'] = $this->activate_url;
         }
-        if ($this->need_push_on_view != NULL) {
+        if ($this->isNotNull($this->need_push_on_view)) {
             $params['need_push_on_view'] = $this->need_push_on_view;
         }
-        if ($this->custom_cell1 != NULL) {
+        if ($this->isNotNull($this->custom_cell1)) {
             $params['custom_cell1'] = $this->custom_cell1->getParams();
         }
-        if ($this->custom_cell2 != NULL) {
+        if ($this->isNotNull($this->custom_cell2)) {
             $params['custom_cell2'] = $this->custom_cell2->getParams();
         }
         return $params;

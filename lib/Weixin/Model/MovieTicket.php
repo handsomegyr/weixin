@@ -29,7 +29,7 @@ class MovieTicket extends CardBase
     {
         $params = array();
         
-        if ($this->detail != NULL) {
+        if ($this->isNotNull($this->detail)) {
             $params['detail'] = $this->detail;
         }
         return $params;

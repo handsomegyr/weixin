@@ -25,7 +25,7 @@ class Groupon extends CardBase
     protected function getParams()
     {
         $params = array();
-        if ($this->deal_detail != NULL) {
+        if ($this->isNotNull($this->deal_detail)) {
             $params['deal_detail'] = $this->deal_detail;
         }
         return $params;

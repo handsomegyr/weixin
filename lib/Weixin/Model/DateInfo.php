@@ -70,22 +70,27 @@ class DateInfo
     {
         $params = array();
         
-        if ($this->type != NULL) {
+        if ($this->isNotNull($this->type)) {
             $params['type'] = $this->type;
         }
-        if ($this->begin_timestamp != NULL) {
+        if ($this->isNotNull($this->begin_timestamp)) {
             $params['begin_timestamp'] = $this->begin_timestamp;
         }
-        if ($this->end_timestamp != NULL) {
+        if ($this->isNotNull($this->end_timestamp)) {
             $params['end_timestamp'] = $this->end_timestamp;
         }
-        if ($this->fixed_term != NULL) {
+        if ($this->isNotNull($this->fixed_term)) {
             $params['fixed_term'] = $this->fixed_term;
         }
-        if ($this->fixed_begin_term != NULL) {
+        if ($this->isNotNull($this->fixed_begin_term)) {
             $params['fixed_begin_term'] = $this->fixed_begin_term;
         }
         
         return $params;
+    }
+    
+    protected function isNotNull($var)
+    {
+        return ! is_null($var);
     }
 }
