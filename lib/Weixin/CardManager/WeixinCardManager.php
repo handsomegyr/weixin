@@ -2024,4 +2024,58 @@ class WeixinCardManager
             return $rst;
         }
     }
+
+    /**
+     * 设置买单接口
+     *
+     * 买单接口说明 创建卡券之后，开发者可以通过设置微信买单接口设置该card_id支持微信买单功能。值得开发者注意的是，设置买单的card_id必须已经配置了门店，否则会报错。 接口详情
+     *
+     * 接口调用请求说明
+     *
+     * http请求方式: POST
+     * https://api.weixin.qq.com/card/paycell/set?access_token=TOKEN
+     * 参数说明
+     *
+     * 参数	是否必须	说明
+     * access_token	是	调用接口凭证
+     * POST数据	是	Json数据
+     * POST数据
+     *
+     * {
+     * “card_id”:“ph_gmt7cUVrlRk8swPwx7aDyF-pg“,
+     * “is_open”: true
+     * }
+     * 字段说明
+     *
+     * 字段名	说明
+     * cardid	卡券ID。
+     * is_open	是否开启买单功能，填true/false
+     * 返回数据
+     *
+     * {
+     * "errcode":0,
+     * "errmsg":"ok"
+     * }
+     * 字段说明
+     *
+     * 字段名	说明
+     * 错误码	错误码，0为正常；43008为商户没有开通微信支付权限或者没有在商户后台申请微信买单功能；
+     * errmsg	错误信息
+     */
+    public function paycellSet($card_id, $is_open = false)
+    {
+        $params = array();
+        $params['card_id'] = $card_id;
+        $params['is_open'] = $is_open;
+        
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'paycell/set?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
 }
