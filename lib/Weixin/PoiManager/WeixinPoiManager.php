@@ -168,7 +168,7 @@ class WeixinPoiManager
      *
      * @return mixed
      */
-    public function addPoi(Weixin\Model\Poi $poi)
+    public function addPoi(\Weixin\Model\Poi $poi)
     {
         $base_info = array();
         $base_info['sid'] = $poi->sid;

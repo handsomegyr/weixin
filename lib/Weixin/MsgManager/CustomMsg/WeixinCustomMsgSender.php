@@ -188,4 +188,23 @@ class WeixinCustomMsgSender
         $ret['news']["articles"] = $items;
         return $this->send($ret);
     }
+
+    /**
+     * 发送卡券消息
+     * 特别注意客服消息接口投放卡券仅支持非自定义Code码的卡券。
+     *
+     * @param string $toUser            
+     * @param string $card_id            
+     * @param array $card_ext            
+     * @return string
+     */
+    public function sendWxcard($toUser, $card_id, array $card_ext)
+    {
+        $ret = array();
+        $ret['touser'] = $toUser;
+        $ret['msgtype'] = 'wxcard';
+        $ret['wxcard']['card_id'] = $card_id;
+        $ret['wxcard']['card_ext'] = json_encode($card_ext);
+        return $this->send($ret);
+    }
 }
