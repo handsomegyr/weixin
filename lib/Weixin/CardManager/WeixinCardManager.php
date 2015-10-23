@@ -2078,4 +2078,26 @@ class WeixinCardManager
             return $rst;
         }
     }
+
+    /**
+     * 拉取微信会员信息
+     *
+     * @param string $code            
+     * @param string $card_id            
+     */
+    public function getMembercardUserInfo($code, $card_id)
+    {
+        $params = array();
+        $params['code'] = $code;
+        $params['card_id'] = $card_id;
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'membercard/userinfo/get?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
 }
