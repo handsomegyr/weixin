@@ -433,4 +433,179 @@ class WeixinMenuManager
             return $rst;
         }
     }
+    
+    
+    /**
+     * 创建个性化菜单
+     *
+     * http请求方式：POST（请使用https协议）
+     *
+     * https://api.weixin.qq.com/cgi-bin/menu/addconditional?access_token=ACCESS_TOKEN
+     * 请求示例
+     *
+     * {
+     * "button":[
+     * {
+     * "type":"click",
+     * "name":"今日歌曲",
+     * "key":"V1001_TODAY_MUSIC"
+     * },
+     * {
+     * "name":"菜单",
+     * "sub_button":[
+     * {
+     * "type":"view",
+     * "name":"搜索",
+     * "url":"http://www.soso.com/"
+     * },
+     * {
+     * "type":"view",
+     * "name":"视频",
+     * "url":"http://v.qq.com/"
+     * },
+     * {
+     * "type":"click",
+     * "name":"赞一下我们",
+     * "key":"V1001_GOOD"
+     * }]
+     * }],
+     * "matchrule":{
+     * "group_id":"2",
+     * "sex":"1",
+     * "country":"中国",
+     * "province":"广东",
+     * "city":"广州",
+     * "client_platform_type":"2"
+     * }
+     * }
+     * 参数说明
+     *
+     * 参数	是否必须	说明
+     * button	是	一级菜单数组，个数应为1~3个
+     * sub_button	否	二级菜单数组，个数应为1~5个
+     * type	是	菜单的响应动作类型
+     * name	是	菜单标题，不超过16个字节，子菜单不超过40个字节
+     * key	click等点击类型必须	菜单KEY值，用于消息接口推送，不超过128字节
+     * url	view类型必须	网页链接，用户点击菜单可打开链接，不超过1024字节
+     * media_id	media_id类型和view_limited类型必须	调用新增永久素材接口返回的合法media_id
+     * matchrule	是	菜单匹配规则
+     * group_id	否	用户分组id，可通过用户分组管理接口获取
+     * sex	否	性别：男（1）女（2），不填则不做匹配
+     * client_platform_type	否	客户端版本，当前只具体到系统型号：IOS(1), Android(2),Others(3)，不填则不做匹配
+     * country	否	国家信息，是用户在微信中设置的地区，具体请参考地区信息表
+     * province	否	省份信息，是用户在微信中设置的地区，具体请参考地区信息表
+     * city	否	城市信息，是用户在微信中设置的地区，具体请参考地区信息表
+     * matchrule共六个字段，均可为空，但不能全部为空，至少要有一个匹配信息是不为空的。 country、province、city组成地区信息，将按照country、province、city的顺序进行验证，要符合地区信息表的内容。地区信息从大到小验证，小的可以不填，即若填写了省份信息，则国家信息也必填并且匹配，城市信息可以不填。 例如 “中国 广东省 广州市”、“中国 广东省”都是合法的地域信息，而“中国 广州市”则不合法，因为填写了城市信息但没有填写省份信息。 地区信息表请点击下载。
+     *
+     * 返回结果
+     *
+     * 正确时的返回JSON数据包如下，错误时的返回码请见接口返回码说明。
+     *
+     * {
+     * "menuid":"208379533"
+     * }
+     */
+    public function addconditional($menusWithMatchrule)
+    {        
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($menusWithMatchrule, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'addconditional?access_token=' . $access_token, $json);
+        // 返回结果
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+    
+    /**
+     * 删除个性化菜单
+     *
+     * http请求方式：POST（请使用https协议）
+     *
+     * https://api.weixin.qq.com/cgi-bin/menu/delconditional?access_token=ACCESS_TOKEN
+     * 请求示例
+     *
+     * {
+     * "menuid":"208379533"
+     * }
+     * menuid为菜单id，可以通过自定义菜单查询接口获取。
+     *
+     * 正确时的返回JSON数据包如下，错误时的返回码请见接口返回码说明。：
+     *
+     * {"errcode":0,"errmsg":"ok"}
+     */
+    public function delconditional($menuid)
+    {
+        $params = array(
+            "menuid" => $menuid
+        );        
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'delconditional?access_token=' . $access_token, $json);
+        // 返回结果
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+    
+    /**
+     * 测试个性化菜单匹配结果
+     *
+     * http请求方式：POST（请使用https协议）
+     *
+     * https://api.weixin.qq.com/cgi-bin/menu/trymatch?access_token=ACCESS_TOKEN
+     * 请求示例
+     *
+     * {
+     * "user_id":"weixin"
+     * }
+     * user_id可以是粉丝的OpenID，也可以是粉丝的微信号。
+     *
+     * 返回结果 该接口将返回菜单配置，示例如下：
+     *
+     * {
+     * "button": [
+     * {
+     * "type": "view",
+     * "name": "tx",
+     * "url": "http://www.qq.com/",
+     * "sub_button": [ ]
+     * },
+     * {
+     * "type": "view",
+     * "name": "tx",
+     * "url": "http://www.qq.com/",
+     * "sub_button": [ ]
+     * },
+     * {
+     * "type": "view",
+     * "name": "tx",
+     * "url": "http://www.qq.com/",
+     * "sub_button": [ ]
+     * }
+     * ]
+     * }
+     * 错误时的返回码请见接口返回码说明。
+     *
+     * @param string $user_id
+     */
+    public function trymatch($user_id)
+    {
+        $params = array(
+            "user_id" => $user_id
+        );        
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'trymatch?access_token=' . $access_token, $json);
+        // 返回结果
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+        
+    }
 }

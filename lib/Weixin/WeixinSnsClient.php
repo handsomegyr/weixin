@@ -64,6 +64,14 @@ class WeixinSnsClient
     }
 
     /**
+     * 授权连接2
+     */
+    private function qrconnectURL()
+    {
+        return 'https://open.weixin.qq.com/connect/qrconnect';
+    }
+
+    /**
      * authorize接口,用户同意授权，获取code
      *
      * 对应API：{@link http://mp.weixin.qq.com/wiki/index.php?title=%E7%BD%91%E9%A1%B5%E6%8E%88%E6%9D%83%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF}
@@ -96,7 +104,12 @@ class WeixinSnsClient
         $params['response_type'] = $response_type;
         $params['scope'] = $scope;
         $params['state'] = $state;
-        return $this->authorizeURL() . "?" . http_build_query($params) . "#wechat_redirect";
+        if ($scope != 'snsapi_login') {
+            $url = $this->authorizeURL();
+        } else {
+            $url = $this->qrconnectURL();
+        }
+        return $url . "?" . http_build_query($params) . "#wechat_redirect";
     }
 
     /**
