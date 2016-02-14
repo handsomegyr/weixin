@@ -2356,7 +2356,9 @@ class WeixinCardManager
     {
         $params = array();
         $params['openid'] = $openid;
+        if(!empty($card_id)){
         $params['card_id'] = $card_id;
+        }
         $access_token = $this->weixin->getToken();
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
         $rst = $this->weixin->post($this->_url . 'user/getcardlist?access_token=' . $access_token, $json);
