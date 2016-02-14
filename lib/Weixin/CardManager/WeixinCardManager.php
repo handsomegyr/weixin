@@ -293,6 +293,23 @@ class WeixinCardManager
         }
     }
 
+    public function qrcodeCreate4Multiple(array $card_list)
+    {
+        $params = array();
+        $params['action_name'] = "QR_MULTIPLE_CARD";
+        $params['action_info']['multiple_card'] = array();
+        $params['action_info']['multiple_card']['card_list'] = $card_list;
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'qrcode/create?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+
     /**
      * 获取api_ticket
      * api_ticket 是用于调用微信 JSAPI 的临时票据， 有效期为 7200 秒， 通过 access_token来获取。
