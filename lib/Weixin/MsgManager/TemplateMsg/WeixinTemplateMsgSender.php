@@ -187,6 +187,47 @@ class WeixinTemplateMsgSender
     }
 
     /**
+     * 获取设置的行业信息
+     *
+     * 获取帐号设置的行业信息，可在MP中查看行业信息，为方便第三方开发者，提供通过接口调用的方式来获取帐号所设置的行业信息，具体如下:
+     *
+     * 接口调用请求说明
+     *
+     * http请求方式：GET
+     * https://api.weixin.qq.com/cgi-bin/template/get_industry?access_token=ACCESS_TOKEN
+     * 参数说明
+     *
+     * 参数	是否必须	说明
+     * access_token	是	接口调用凭证
+     * 返回说明
+     *
+     * 正确调用后的返回示例：
+     *
+     * {
+     * "primary_industry":{"first_class":"运输与仓储","second_class":"快递"},
+     * "secondary_industry":{"first_class":"IT科技","second_class":"互联网|电子商务"}
+     * }
+     * 返回参数说明
+     *
+     * 参数	说明
+     * primary_industry	帐号设置的主营行业
+     * secondary_industry	帐号设置的副营行业
+     */
+    public function getIndustry()
+    {
+        $params = array();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $access_token = $this->weixinMsgManager->getWeixin()->getToken();
+        $rst = $this->weixinMsgManager->getWeixin()->post($this->_url . 'template/get_industry?access_token=' . $access_token, $json);
+        // 返回结果
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+
+    /**
      * 获得模板ID
      *
      * 从行业模板库选择模板到账号后台，获得模板ID的过程可在MP中完成。为方便第三方开发者，提供通过接口调用的方式来修改账号所属行业，具体如下：
@@ -223,6 +264,99 @@ class WeixinTemplateMsgSender
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
         $access_token = $this->weixinMsgManager->getWeixin()->getToken();
         $rst = $this->weixinMsgManager->getWeixin()->post($this->_url . 'template/api_add_template?access_token=' . $access_token, $json);
+        // 返回结果
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+    
+
+    /**
+     * 获取模板列表
+     *
+     * 获取已添加至帐号下所有模板列表，可在MP中查看模板列表信息，为方便第三方开发者，提供通过接口调用的方式来获取帐号下所有模板信息，具体如下:
+     *
+     * 接口调用请求说明
+     *
+     * http请求方式：GET
+     * https://api.weixin.qq.com/cgi-bin/template/get_all_private_template?access_token=ACCESS_TOKEN
+     * 参数说明
+     *
+     * 参数	是否必须	说明
+     * access_token	是	接口调用凭证
+     * 返回说明
+     *
+     * 正确调用后的返回示例：
+     *
+     * {
+     * "template_list": [{
+     * "template_id": "iPk5sOIt5X_flOVKn5GrTFpncEYTojx6ddbt8WYoV5s",
+     * "title": "领取奖金提醒",
+     * "primary_industry": "IT科技",
+     * "deputy_industry": "互联网|电子商务",
+     * "content": "{ {result.DATA} }\n\n领奖金额:{ {withdrawMoney.DATA} }\n领奖 时间:{ {withdrawTime.DATA} }\n银行信息:{ {cardInfo.DATA} }\n到账时间: { {arrivedTime.DATA} }\n{ {remark.DATA} }",
+     * "example": "您已提交领奖申请\n\n领奖金额：xxxx元\n领奖时间：2013-10-10 12:22:22\n银行信息：xx银行(尾号xxxx)\n到账时间：预计xxxxxxx\n\n预计将于xxxx到达您的银行卡"
+     * }]
+     * }
+     * 返回参数说明
+     *
+     * 参数	说明
+     * template_id	模板ID
+     * title	模板标题
+     * primary_industry	模板所属行业的一级行业
+     * deputy_industry	模板所属行业的二级行业
+     * content	模板内容
+     * example	模板示例
+     */
+    public function getAllPrivateTemplate()
+    {        
+        $params = array();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $access_token = $this->weixinMsgManager->getWeixin()->getToken();
+        $rst = $this->weixinMsgManager->getWeixin()->post($this->_url . 'template/get_all_private_template?access_token=' . $access_token, $json);
+        // 返回结果
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+    
+    /**
+     * 删除模板
+     *
+     * 删除模板可在MP中完成，为方便第三方开发者，提供通过接口调用的方式来删除某帐号下的模板，具体如下：
+     *
+     * 接口调用请求说明
+     *
+     * http请求方式post
+     * https://api,weixin.qq.com/cgi-bin/template/del_private_template?access_token=ACCESS_TOKEN
+     * POST数据说明如下：
+     *
+     * {
+     * “template_id”=”Dyvp3-Ff0cnail_CDSzk1fIc6-9lOkxsQE7exTJbwUE”
+     * }
+     * 参数说明
+     *
+     * 参数	是否必须	说明
+     * template_id	是	公众帐号下模板消息ID
+     * 返回说明
+     *
+     * 在调用接口后，会返回JSON数据包。正常时的返回JSON数据包示例：
+     *
+     * {
+     * "errcode":0,"errmsg":"ok"
+     * }
+     */
+    public function delPrivateTemplate($template_id)
+    {        
+        $params = array();
+        $params['template_id'] = $template_id;
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $access_token = $this->weixinMsgManager->getWeixin()->getToken();
+        $rst = $this->weixinMsgManager->getWeixin()->post($this->_url . 'template/del_private_template?access_token=' . $access_token, $json);
         // 返回结果
         if (! empty($rst['errcode'])) {
             throw new WeixinException($rst['errmsg'], $rst['errcode']);
