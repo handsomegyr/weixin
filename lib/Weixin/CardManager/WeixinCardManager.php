@@ -1802,6 +1802,65 @@ class WeixinCardManager
     }
 
     /**
+     * 查询导入code数目接口
+     *
+     * 接口说明
+     *
+     * 支持开发者调用该接口查询code导入微信后台成功的数目。
+     *
+     * 接口调用请求说明
+     *
+     * http请求方式: POST
+     * http://api.weixin.qq.com/card/code/getdepositcount?access_token=ACCESS_TOKEN
+     * 请求参数说明
+     *
+     * 参数	是否必须	说明
+     * access_token	是	调用接口凭证
+     * 请POST数据
+     *
+     * 数据示例
+     *
+     * {
+     * "card_id" : " pDF3iY0_dVjb_Pua96MMewA96qvA "
+     * }
+     *
+     * 字段说明：
+     *
+     * 字段	说明	是否必填
+     * cardid	进行导入code的卡券ID。	是
+     * 返回数据说明
+     *
+     * 返回示例：
+     *
+     * {
+     * "errcode":0,
+     * "errmsg":"ok"，
+     * "count":123
+     * }
+     *
+     * 字段说明：
+     *
+     * 字段	说明
+     * errcode	错误码，0为正常。
+     * errmsg	错误信息。
+     * count	已经成功存入的code数目。
+     */
+    public function codeGetDepositCount($card_id)
+    {
+        $params = array();
+        $params['card_id'] = $card_id;
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post('http://api.weixin.qq.com/card/code/getdepositcount?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+
+    /**
      * 核查code接口
      * 接口说明
      * 支持开发者调用该接口查询code导入情况。
