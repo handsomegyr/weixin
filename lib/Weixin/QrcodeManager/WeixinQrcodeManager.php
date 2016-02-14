@@ -33,37 +33,62 @@ class WeixinQrcodeManager
 
     /**
      * 创建二维码ticket
-     * 每次创建二维码ticket需要提供一个开发者自行设定的参数（scene_id），
-     * 分别介绍临时二维码和永久二维码的创建二维码ticket过程。
+     *
+     * 每次创建二维码ticket需要提供一个开发者自行设定的参数（scene_id），分别介绍临时二维码和永久二维码的创建二维码ticket过程。
+     *
+     * 临时二维码请求说明
+     *
+     * http请求方式: POST
+     * URL: https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=TOKEN
+     * POST数据格式：json
+     * POST数据例子：{"expire_seconds": 604800, "action_name": "QR_SCENE", "action_info": {"scene": {"scene_id": 123}}}
+     * 永久二维码请求说明
+     *
+     * http请求方式: POST
+     * URL: https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=TOKEN
+     * POST数据格式：json
+     * POST数据例子：{"action_name": "QR_LIMIT_SCENE", "action_info": {"scene": {"scene_id": 123}}}
+     * 或者也可以使用以下POST数据创建字符串形式的二维码参数：
+     * {"action_name": "QR_LIMIT_STR_SCENE", "action_info": {"scene": {"scene_str": "123"}}}
+     * 参数说明
+     *
+     * 参数	说明
+     * expire_seconds	该二维码有效时间，以秒为单位。 最大不超过2592000（即30天），此字段如果不填，则默认有效期为30秒。
+     * action_name	二维码类型，QR_SCENE为临时,QR_LIMIT_SCENE为永久,QR_LIMIT_STR_SCENE为永久的字符串参数值
+     * action_info	二维码详细信息
+     * scene_id	场景值ID，临时二维码时为32位非0整型，永久二维码时最大值为100000（目前参数只支持1--100000）
+     * scene_str	场景值ID（字符串形式的ID），字符串类型，长度限制为1到64，仅永久二维码支持此字段
+     * 返回说明
+     *
+     * 正确的Json返回结果:
+     *
+     * {"ticket":"gQH47joAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL2taZ2Z3TVRtNzJXV1Brb3ZhYmJJAAIEZ23sUwMEmm3sUw==","expire_seconds":60,"url":"http:\/\/weixin.qq.com\/q\/kZgfwMTm72WWPkovabbI"}
+     * 参数	说明
+     * ticket	获取的二维码ticket，凭借此ticket可以在有效时间内换取二维码。
+     * expire_seconds	该二维码有效时间，以秒为单位。 最大不超过2592000（即30天）。
+     * url	二维码图片解析后的地址，开发者可根据该地址自行生成需要的二维码图片
+     * 错误的Json返回示例:
+     *
+     * {"errcode":40013,"errmsg":"invalid appid"}
      *
      * @author Kan
      *        
      */
-    public function create($scene_id, $isTemporary = true, $expire_seconds = 0)
+    public function create($scene_id, $isTemporary = true, $expire_seconds = 0, $scene_str = '')
     {
-        // 临时二维码请求说明
-        // http请求方式: POST
-        // URL: https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=TOKEN
-        // POST数据格式：json
-        // POST数据例子：{"expire_seconds": 1800, "action_name": "QR_SCENE", "action_info": {"scene": {"scene_id": 123}}}
-        // 永久二维码请求说明
-        // http请求方式: POST
-        // URL: https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=TOKEN
-        // POST数据格式：json
-        // POST数据例子：{"action_name": "QR_LIMIT_SCENE", "action_info": {"scene": {"scene_id": 123}}}
-        // 参数 说明
-        // expire_seconds 该二维码有效时间，以秒为单位。 最大不超过1800。
-        // action_name 二维码类型，QR_SCENE为临时,QR_LIMIT_SCENE为永久
-        // action_info 二维码详细信息
-        // scene_id 场景值ID，临时二维码时为32位整型，永久二维码时最大值为100000
         $params = array();
         if ($isTemporary) {
             $params['expire_seconds'] = min($expire_seconds, 1800);
             $params['action_name'] = "QR_SCENE";
             $params['action_info']['scene']['scene_id'] = $scene_id;
         } else {
-            $params['action_name'] = "QR_LIMIT_SCENE";
-            $params['action_info']['scene']['scene_id'] = min($scene_id, 100000);
+            if (empty($scene_str)) {
+                $params['action_name'] = "QR_LIMIT_SCENE";
+                $params['action_info']['scene']['scene_id'] = min($scene_id, 100000);
+            } else {
+                $params['action_name'] = "QR_LIMIT_STR_SCENE";
+                $params['action_info']['scene']['scene_str'] = $scene_str;
+            }
         }
         $access_token = $this->weixin->getToken();
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
