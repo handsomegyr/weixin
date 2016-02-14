@@ -74,7 +74,7 @@ class WeixinQrcodeManager
      * @author Kan
      *        
      */
-    public function create($scene_id, $isTemporary = true, $expire_seconds = 0, $scene_str = '')
+    public function create($scene_id, $isTemporary = true, $expire_seconds = 0)
     {
         $params = array();
         if ($isTemporary) {
@@ -82,12 +82,12 @@ class WeixinQrcodeManager
             $params['action_name'] = "QR_SCENE";
             $params['action_info']['scene']['scene_id'] = $scene_id;
         } else {
-            if (empty($scene_str)) {
+            if (is_numeric($scene_id)) {
                 $params['action_name'] = "QR_LIMIT_SCENE";
                 $params['action_info']['scene']['scene_id'] = min($scene_id, 100000);
             } else {
                 $params['action_name'] = "QR_LIMIT_STR_SCENE";
-                $params['action_info']['scene']['scene_str'] = $scene_str;
+                $params['action_info']['scene']['scene_str'] = $scene_id;
             }
         }
         $access_token = $this->weixin->getToken();
