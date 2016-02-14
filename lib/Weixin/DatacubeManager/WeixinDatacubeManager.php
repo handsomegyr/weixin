@@ -739,4 +739,282 @@ class WeixinDatacubeManager
             return $rst;
         }
     }
+
+    /**
+     * 拉取卡券概况数据接口
+     *
+     * 接口说明
+     *
+     * 支持调用该接口拉取本商户的总体数据情况，包括时间区间内的各指标总量。
+     *
+     * 特别注意： 1. 查询时间区间需<=62天，否则报错{errcode: 61501，errmsg: "date range error"}；
+     *
+     * 2. 传入时间格式需严格参照示例填写”2015-06-15”，否则报错{errcode":61500,"errmsg":"date format error"}
+     *
+     *
+     * 接口调用请求说明
+     *
+     * http请求方式: POST
+     * https://api.weixin.qq.com/datacube/getcardbizuininfo?access_token=ACCESS_TOKEN
+     * 请求参数说明
+     *
+     * 参数	是否必须	说明
+     * access_token	是	调用接口凭证
+     * POST数据	是	Json数据
+     * POST数据
+     *
+     * ｛
+     * "begin_date":"2015-06-15", //请开发者按示例格式填写日期，否则会报错date format error
+     * "end_date":"2015-06-30",
+     * "cond_source": 0
+     * ｝
+     *
+     * 参数说明：
+     *
+     * 字段	说明	是否必填	类型	示例值
+     * begin_date	查询数据的起始时间。	是	string(16)	2015-06-15
+     * end_date	查询数据的截至时间。	是	string(16)	2015-06-30
+     * cond_source	卡券来源，0为公众平台创建的卡券数据、1是API创建的卡券数据	是	unsigned int	0
+     * 返回数据说明 数据示例：
+     *
+     * {
+     * "list": [
+     * {
+     * "ref_date": "2015-06-23",
+     * "view_cnt": 1,
+     * "view_user": 1,
+     * "receive_cnt": 1,
+     * "receive_user": 1,
+     * "verify_cnt": 0,
+     * "verify_user": 0,
+     * "given_cnt": 0,
+     * "given_user": 0,
+     * "expire_cnt": 0,
+     * "expire_user": 0
+     * }
+     * ]
+     * }
+     *
+     * 字段说明：
+     *
+     * 字段	说明
+     * ref_date	日期信息
+     * view_cnt	浏览次数
+     * view_user	浏览人数
+     * receive_cnt	领取次数
+     * receive_user	领取人数
+     * verify_cnt	使用次数
+     * verify_user	使用人数
+     * given_cnt	转赠次数
+     * given_user	转赠人数
+     * expire_cnt	过期次数
+     * expire_user	过期人数
+     */
+    public function getCardBizuinInfo($begin_date, $end_date, $cond_source = 1)
+    {
+        $params = array(
+            "begin_date" => $begin_date,
+            "end_date" => $end_date,
+            "cond_source" => $cond_source
+        );
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'getcardbizuininfo?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+
+    /**
+     * 获取免费券数据接口
+     *
+     * 接口说明
+     *
+     * 支持开发者调用该接口拉取免费券（优惠券、团购券、折扣券、礼品券）在固定时间区间内的相关数据。
+     *
+     * 特别注意：
+     *
+     * 1. 该接口目前仅支持拉取免费券（优惠券、团购券、折扣券、礼品券）的卡券相关数据，暂不支持特殊票券（电影票、会议门票、景区门票、飞机票）数据。
+     *
+     * 2. 查询时间区间需<=62天，否则报错{"errcode:" 61501，errmsg: "date range error"}；
+     *
+     * 3. 传入时间格式需严格参照示例填写如”2015-06-15”，否则报错｛"errcode":"date format error"｝
+     *
+     * 接口调用请求说明
+     *
+     * http请求方式: POST
+     * https://api.weixin.qq.com/datacube/getcardcardinfo?access_token=ACCESS_TOKEN
+     * 请求参数说明
+     *
+     * 参数	是否必须	说明
+     * access_token	是	调用接口凭证
+     * POST数据	是	Json数据
+     * POST数据
+     *
+     * ｛
+     * "begin_date":"2015-06-15",
+     * "end_date":"2015-06-30",
+     * "cond_source": 0,
+     * "card_id": "po8pktyDLmakNY2fn2VyhkiEPqGE"
+     * ｝
+     *
+     * 参数说明：
+     *
+     * 字段	说明	是否必填	类型	示例值
+     * begin_date	查询数据的起始时间。	是	string(16)	2015-06-15
+     * end_date	查询数据的截至时间。	是	string(16)	2015-06-30
+     * cond_source	卡券来源，0为公众平台创建的卡券数据、1是API创建的卡券数据	是	unsigned int	0
+     * card_id	卡券ID。填写后，指定拉出该卡券的相关数据。	否	string(32)	po8pktyDLmakNY2fn2VyhkiEPqGE
+     *
+     * 返回数据说明 数据示例：
+     *
+     * {
+     * "list": [
+     * {
+     * "ref_date": "2015-06-23",
+     * "card_id": "po8pktyDLmakNY2fn2VyhkiEPqGE",
+     * "card_type":3,
+     * "view_cnt": 1,
+     * "view_user": 1,
+     * "receive_cnt": 1,
+     * "receive_user": 1,
+     * "verify_cnt": 0,
+     * "verify_user": 0,
+     * "given_cnt": 0,
+     * "given_user": 0,
+     * "expire_cnt": 0,
+     * "expire_user": 0
+     * }
+     * ]
+     * }
+     *
+     * 字段说明：
+     *
+     * 字段	说明
+     * ref_date	日期信息
+     * card_id	卡券ID
+     * card_type	cardtype:0：折扣券，1：代金券，2：礼品券，3：优惠券，4：团购券（暂不支持拉取特殊票券类型数据，电影票、飞机票、会议门票、景区门票）
+     * view_cnt	浏览次数
+     * view_user	浏览人数
+     * receive_cnt	领取次数
+     * receive_user	领取人数
+     * verify_cnt	使用次数
+     * verify_user	使用人数
+     * given_cnt	转赠次数
+     * given_user	转赠人数
+     * expire_cnt	过期次数
+     * expire_user	过期人数
+     */
+    public function getCardCardInfo($begin_date, $end_date, $cond_source = 1, $card_id = '')
+    {
+        $params = array(
+            "begin_date" => $begin_date,
+            "end_date" => $end_date,
+            "cond_source" => $cond_source
+        );
+        if (! empty($card_id)) {
+            $params['card_id'] = $card_id;
+        }
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'getcardcardinfo?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
+
+    /**
+     * 拉取会员卡数据接口
+     *
+     * 接口简介及开发者注意事项
+     *
+     * 为支持开发者调用API查看卡券相关数据，微信卡券团队封装数据接口并面向具备卡券功能权限的开发者开放使用。开发者调用该接口可获取本商户下的所有卡券相关的总数据以及指定卡券的相关数据。开发过程请务必注意以下事项：
+     *
+     * 1.查询时间区间需<=62天，否则报错{errcode: 61501，errmsg: "date range error"}；
+     *
+     * 2.传入时间格式需严格参照示例填写”2015-06-15”，否则报错{errcode":61500,"errmsg":"date format error"}；
+     *
+     * 3.需在获取卡券相关数据前区分卡券创建渠道：公众平台创建、调用卡券接口创建。
+     *
+     * 接口说明
+     *
+     * 支持开发者调用该接口拉取公众平台创建的会员卡相关数据。
+     *
+     *
+     * 接口调用请求说明
+     *
+     * http请求方式: POST
+     * https://api.weixin.qq.com/datacube/getcardmembercardinfo?access_token=ACCESS_TOKEN
+     * 参数说明
+     *
+     * 参数	是否必须	说明
+     * POST数据	是	Json数据
+     * access_token	是	调用接口凭证
+     * POST数据
+     *
+     * ｛
+     * "begin_date":"2015-06-15",
+     * "end_date":"2015-06-30",
+     * "cond_source": 0
+     * ｝
+     * 参数说明：
+     *
+     * 字段	说明	是否必填	类型	示例值
+     * begin_date	查询数据的起始时间。	是	string(16)	2015-06-15
+     * end_date	查询数据的截至时间。	是	string(16)	2015-06-30
+     * cond_source	卡券来源，0为公众平台创建的卡券数据、1是API创建的卡券数据	是	unsigned int	0
+     * 返回数据说明 数据示例：
+     *
+     * {
+     * "list": [
+     * {
+     * "ref_date": "2015-06-23",
+     * "view_cnt": 0,
+     * "view_user": 0,
+     * "receive_cnt": 0,
+     * "receive_user": 0,
+     * "active_user": 0,
+     * "verify_cnt": 0,
+     * "verify_user": 0,
+     * "total_user": 86,
+     * "total_receive_user": 95
+     * ]
+     * }
+     * 字段说明：
+     *
+     * 字段	说明
+     * ref_date	日期信息
+     * view_cnt	浏览次数
+     * view_user	浏览人数
+     * receive_cnt	领取次数
+     * receive_user	领取人数
+     * verify_cnt	使用次数
+     * verify_user	使用人数
+     * active_user	激活人数
+     * total_user	有效会员总人数
+     * total_receive_user	历史领取会员卡总人数
+     */
+    public function getCardMembercardInfo($begin_date, $end_date, $cond_source = 1)
+    {
+        $params = array(
+            "begin_date" => $begin_date,
+            "end_date" => $end_date,
+            "cond_source" => $cond_source
+        );
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'getcardmembercardinfo?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
 }
