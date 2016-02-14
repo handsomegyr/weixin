@@ -2311,4 +2311,60 @@ class WeixinCardManager
             return $rst;
         }
     }
+
+    /**
+     * 获取用户已领取卡券接口
+     *
+     * 用于获取用户卡包里的，属于该appid下的卡券。
+     *
+     * 接口调用请求说明
+     *
+     * http请求方式: POST
+     * https://api.weixin.qq.com/card/user/getcardlist?access_token=TOKEN
+     * 参数说明
+     *
+     * 参数	是否必须	说明
+     * POST数据	是	Json数据
+     * access_token	是	调用接口凭证
+     * POST数据
+     *
+     * {
+     * "openid": "12312313",
+     * "card_id": "xxxxxxxxxx"
+     * }
+     * 参数名	必填	类型	示例值	描述
+     * openid	是	string(64)	1231231	需要查询的用户openid
+     * card_id	否	string(32)	pFS7Fjg8kV1IdDz01xxxxx	卡券ID。不填写时默认查询当前appid下的卡券。
+     * 返回数据
+     *
+     * 数据示例：
+     *
+     * {
+     * "errcode":0,
+     * "errmsg":"ok",
+     * "card_list": [
+     * {"code": "xxx1434079154", "card_id": "xxxxxxxxxx"},
+     * {"code": "xxx1434079155", "card_id": "xxxxxxxxxx"}
+     * ]
+     * }
+     * 参数名	描述
+     * errcode	错误码
+     * errmsg	错误信息
+     * card_list	卡券列表
+     */
+    public function userGetcardlist($openid, $card_id = '')
+    {
+        $params = array();
+        $params['openid'] = $openid;
+        $params['card_id'] = $card_id;
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'user/getcardlist?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
 }
