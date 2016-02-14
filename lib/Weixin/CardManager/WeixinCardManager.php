@@ -2100,4 +2100,56 @@ class WeixinCardManager
             return $rst;
         }
     }
+
+    /**
+     * 图文消息群发卡券
+     *
+     * 支持开发者调用该接口获取卡券嵌入图文消息的标准格式代码，将返回代码填入上传图文素材接口中content字段，即可获取嵌入卡券的图文消息素材。
+     *
+     * 特别注意：目前该接口仅支持填入非自定义code的卡券,自定义code的卡券需先进行code导入后调用。
+     *
+     * 接口调用请求说明
+     *
+     * http请求方式: POST
+     * https://api.weixin.qq.com/card/mpnews/gethtml?access_token=TOKEN
+     * 参数说明
+     *
+     * 参数	是否必须	说明
+     * POST数据	是	Json数据
+     * access_token	是	调用接口凭证
+     * POST数据
+     *
+     * {
+     * "card_id":"p1Pj9jr90_SQRaVqYI239Ka1erkI"
+     * }
+     * 参数名	必填	类型	示例值	描述
+     * cardid	否	string(32)	pFS7Fjg8kV1IdDz01r4SQwMkuCKc	卡券ID。
+     * 返回数据
+     *
+     * 数据示例：
+     *
+     * {
+     * "errcode":0,
+     * "errmsg":"ok",
+     * "content":"<iframeclass=\"res_iframecard_iframejs_editor_card\"data-src=\"http: \/\/mp.weixin.qq.com\/bizmall\/appmsgcard?action=show&biz=MjM5OTAwODk4MA%3D%3D&cardid=p1Pj9jnXTLf2nF7lccYScFUYqJ0&wechat_card_js=1#wechat_redirect\">"
+     * }
+     * 参数名	描述
+     * errcode	错误码
+     * errmsg	错误信息
+     * content	返回一段html代码，可以直接嵌入到图文消息的正文里。即可以把这段代码嵌入到上传图文消息素材接口中的content字段里。
+     */
+    public function mpnewsGetHtml($card_id)
+    {
+        $params = array();
+        $params['card_id'] = $card_id;
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'mpnews/gethtml?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
 }
