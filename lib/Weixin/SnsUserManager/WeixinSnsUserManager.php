@@ -47,22 +47,54 @@ class WeixinSnsUserManager
 
     /**
      * 拉取用户信息(需scope为 snsapi_userinfo)
-     * 如果网页授权作用域为snsapi_userinfo，
-     * 则此时开发者可以通过access_token和openid拉取用户信息了。
      *
-     * @author Kan
-     *        
+     * 如果网页授权作用域为snsapi_userinfo，则此时开发者可以通过access_token和openid拉取用户信息了。
+     *
+     * 请求方法
+     *
+     * http：GET（请使用https协议）
+     * https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN
+     * 参数说明
+     *
+     * 参数	描述
+     * access_token	网页授权接口调用凭证,注意：此access_token与基础支持的access_token不同
+     * openid	用户的唯一标识
+     * lang	返回国家地区语言版本，zh_CN 简体，zh_TW 繁体，en 英语
+     * 返回说明
+     *
+     * 正确时返回的JSON数据包如下：
+     *
+     * {
+     * "openid":" OPENID",
+     * "nickname": NICKNAME,
+     * "sex":"1",
+     * "province":"PROVINCE"
+     * "city":"CITY",
+     * "country":"COUNTRY",
+     * "headimgurl": "http://wx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfpb6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/46",
+     * "privilege":[
+     * "PRIVILEGE1"
+     * "PRIVILEGE2"
+     * ],
+     * "unionid": "o6_bmasdasdsad6_2sgVt7hMZOPfL"
+     * }
+     * 参数	描述
+     * openid	用户的唯一标识
+     * nickname	用户昵称
+     * sex	用户的性别，值为1时是男性，值为2时是女性，值为0时是未知
+     * province	用户个人资料填写的省份
+     * city	普通用户个人资料填写的城市
+     * country	国家，如中国为CN
+     * headimgurl	用户头像，最后一个数值代表正方形头像大小（有0、46、64、96、132数值可选，0代表640*640正方形头像），用户没有头像时该项为空。若用户更换头像，原有头像URL将失效。
+     * privilege	用户特权信息，json 数组，如微信沃卡用户为（chinaunicom）
+     * unionid	只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。详见：获取用户个人信息（UnionID机制）
+     *
+     * 错误时微信会返回JSON数据包如下（示例为openid无效）:
+     *
+     * {"errcode":40003,"errmsg":" invalid openid "}
      */
     public function getSnsUserInfo($openid, $lang = 'zh_CN')
     {
-        // 请求方法
-        // http：GET（请使用https协议）
-        // https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID
-        // 参数说明
-        // 参数 描述
-        // access_token 网页授权接口调用凭证,注意：此access_token与基础支持的access_token不同
-        // openid 用户的唯一标识
-        // lang 返回国家地区语言版本，zh_CN 简体，zh_TW 繁体，en 英语
         $access_token = $this->weixin->getToken();
         $params = array();
         $params['access_token'] = $access_token;
@@ -71,33 +103,44 @@ class WeixinSnsUserManager
         $rst = $this->weixin->get("https://api.weixin.qq.com/sns/userinfo", $params);
         // 返回说明
         if (! empty($rst['errcode'])) {
-            // 错误时微信会返回JSON数据包如下（示例为openid无效）:
-            // {"errcode":40003,"errmsg":" invalid openid "}
             throw new WeixinException($rst['errmsg'], $rst['errcode']);
         } else {
-            // 正确时返回的JSON数据包如下：
-            // {
-            // "openid":" OPENID",
-            // " nickname": NICKNAME,
-            // "sex":"1",
-            // "province":"PROVINCE"
-            // "city":"CITY",
-            // "country":"COUNTRY",
-            // "headimgurl": "http://wx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfpb6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/46",
-            // "privilege":[
-            // "PRIVILEGE1"
-            // "PRIVILEGE2"
-            // ]
-            // }
-            // 参数 描述
-            // openid 用户的唯一标识
-            // nickname 用户昵称
-            // sex 用户的性别，值为1时是男性，值为2时是女性，值为0时是未知
-            // province 用户个人资料填写的省份
-            // city 普通用户个人资料填写的城市
-            // country 国家，如中国为CN
-            // headimgurl 用户头像，最后一个数值代表正方形头像大小（有0、46、64、96、132数值可选，0代表640*640正方形头像），用户没有头像时该项为空
-            // privilege 用户特权信息，json 数组，如微信沃卡用户为（chinaunicom）
+            return $rst;
+        }
+    }
+
+    /**
+     * 检验授权凭证（access_token）是否有效
+     *
+     * 请求方法
+     *
+     * http：GET（请使用https协议）
+     * https://api.weixin.qq.com/sns/auth?access_token=ACCESS_TOKEN&openid=OPENID
+     * 参数说明
+     *
+     * 参数	描述
+     * access_token	网页授权接口调用凭证,注意：此access_token与基础支持的access_token不同
+     * openid	用户的唯一标识
+     * 返回说明
+     *
+     * 正确的Json返回结果：
+     *
+     * { "errcode":0,"errmsg":"ok"}
+     * 错误时的Json返回示例：
+     *
+     * { "errcode":40003,"errmsg":"invalid openid"}
+     */
+    public function auth($openid)
+    {
+        $access_token = $this->weixin->getToken();
+        $params = array();
+        $params['access_token'] = $access_token;
+        $params['openid'] = $openid;
+        $rst = $this->weixin->get("https://api.weixin.qq.com/sns/auth", $params);
+        // 返回说明
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
             return $rst;
         }
     }

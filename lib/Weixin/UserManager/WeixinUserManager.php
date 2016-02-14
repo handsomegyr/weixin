@@ -38,7 +38,6 @@ class WeixinUserManager
         // access_token 是 调用接口凭证
         // openid 是 普通用户的标识，对当前公众号唯一
         // lang 否 返回国家地区语言版本，zh_CN 简体，zh_TW 繁体，en 英语
-        
         $access_token = $this->weixin->getToken();
         $params = array();
         $params['access_token'] = $access_token;
