@@ -18,11 +18,12 @@ class BaseInfo
      * code_type
      * code 码展示类型。
      * 是
-     * "CODE_TYPE_TEXT"，文本
-     * "CODE_TYPE_BARCODE"，一维码
-     * "CODE_TYPE_QRCODE"，二维码；
-     * “CODE_TYPE_ONLY_QRCODE”,二维码无 code 显示；
-     * “CODE_TYPE_ONLY_BARCODE”,一维码无 code 显示；
+     * CODE_TYPE_TEXT，文本
+     * CODE_TYPE_BARCODE，一维码
+     * CODE_TYPE_QRCODE，二维码；
+     * CODE_TYPE_ONLY_QRCODE,二维码无 code 显示；
+     * CODE_TYPE_ONLY_BARCODE,一维码无 code 显示；
+     * CODE_TYPE_NONE，不显示code和条形码类型，须开发者传入"立即使用"自定义cell完成线上券核销。
      * 是
      */
     public $code_type = NULL;
@@ -185,19 +186,43 @@ class BaseInfo
     public $promotion_url_sub_title = NULL;
 
     /**
+     * center_title
+     * 否
+     * string（18）	立即使用
+     * 卡券顶部居中的按钮，仅在卡券状态正常(可以核销)时显示，建议开发者设置此按钮时code_type选择CODE_TYPE_NONE类型。
+     */
+    public $center_title = NULL;
+
+    /**
+     * center_sub_title
+     * 否
+     * string（24）	立即享受优惠
+     * 显示在入口下方的提示语，仅在卡券状态正常(可以核销)时显示。
+     */
+    public $center_sub_title = NULL;
+
+    /**
+     * center_url
+     * 否
+     * string（128）	www.xxx.com
+     * 顶部居中的url，仅在卡券状态正常(可以核销)时显示。
+     */
+    public $center_url = NULL;
+
+    /**
      * status
      * 1：待审核，2：审核失败，3：通过审核， 4：已删除（飞机票的status 字段为1：正常2：已删除）
      *
      * //v2.0改成以下值
-     * “CARD_STATUS_NOT_VERIFY”,
+     * CARD_STATUS_NOT_VERIFY,
      * 待审核
-     * “CARD_STATUS_VERIFY_FALL”,
+     * CARD_STATUS_VERIFY_FALL,
      * 审核失败
-     * “CARD_STATUS_VERIFY_OK”，
+     * CARD_STATUS_VERIFY_OK，
      * 通过审核
-     * “CARD_STATUS_USER_DELETE” ，
+     * CARD_STATUS_USER_DELETE ，
      * 卡券被用户删除
-     * “CARD_STATUS_USER_DISPATCH”，在公众平台投放过的卡券
+     * CARD_STATUS_USER_DISPATCH，在公众平台投放过的卡券
      */
     public $status = NULL;
 
@@ -250,13 +275,13 @@ class BaseInfo
      * url_name_type
      * 商户自定义cell 名称
      * 否
-     * "URL_NAME_TYPE_TAKE_AWAY"，外卖
-     * "URL_NAME_TYPE_RESERVATION"，在线预订
-     * "URL_NAME_TYPE_USE_IMMEDIATELY"，立即使用
-     * "URL_NAME_TYPE_APPOINTMENT”,在线预约
+     * URL_NAME_TYPE_TAKE_AWAY，外卖
+     * URL_NAME_TYPE_RESERVATION，在线预订
+     * URL_NAME_TYPE_USE_IMMEDIATELY，立即使用
+     * URL_NAME_TYPE_APPOINTMENT,在线预约
      * URL_NAME_TYPE_EXCHANGE,在线兑换
      * URL_NAME_TYPE_MALL,在线商城
-     * "URL_NAME_TYPE_VEHICLE_INFORMATION，车辆信息（该权限申请及说明详见Q&A)
+     * URL_NAME_TYPE_VEHICLE_INFORMATION，车辆信息（该权限申请及说明详见Q&A)
      * 否
      */
     public $url_name_type = NULL;
@@ -331,6 +356,21 @@ class BaseInfo
     public function set_source($source)
     {
         $this->source = $source;
+    }
+
+    public function set_center_title($center_title)
+    {
+        $this->center_title = $center_title;
+    }
+
+    public function set_center_sub_title($center_sub_title)
+    {
+        $this->center_sub_title = $center_sub_title;
+    }
+
+    public function set_center_url($center_url)
+    {
+        $this->center_url = $center_url;
     }
 
     public function set_custom_url_name($custom_url_name)
@@ -489,6 +529,15 @@ class BaseInfo
             $params['promotion_url_sub_title'] = $this->promotion_url_sub_title;
         }
         
+        if ($this->isNotNull($this->center_title)) {
+            $params['center_title'] = $this->center_title;
+        }
+        if ($this->isNotNull($this->center_sub_title)) {
+            $params['center_sub_title'] = $this->center_sub_title;
+        }
+        if ($this->isNotNull($this->center_url)) {
+            $params['center_url'] = $this->center_url;
+        }
         /**
          * 以下字段都是用以微信摇一摇的时候设置
          */
