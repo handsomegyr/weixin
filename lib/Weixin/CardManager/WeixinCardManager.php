@@ -2211,4 +2211,87 @@ class WeixinCardManager
             return $rst;
         }
     }
+
+    /**
+     * 创建货架接口
+     *
+     * 接口说明
+     *
+     * 开发者需调用该接口创建货架链接，用于卡券投放。创建货架时需填写投放路径的场景字段。
+     *
+     *
+     * 接口调用请求说明
+     *
+     * http请求方式: POST
+     * https://api.weixin.qq.com/card/landingpage/create?access_token=$TOKEN
+     * 请求参数说明
+     *
+     * 参数	是否必须	说明
+     * access_token	是	调用接口凭证
+     * buffer	是	文件的数据流
+     * POST数据
+     *
+     * {
+     * "banner":"http://mmbiz.qpic.cn/mmbiz/iaL1LJM1mF9aRKPZJkmG8xXhiaHqkKSVMMWeN3hLut7X7h icFN",
+     * "page_title": "惠城优惠大派送",
+     * "can_share": true,
+     * "scene": "SCENE_NEAR_BY",
+     * "card_list": [
+     * {
+     * "card_id": "pXch-jnOlGtbuWwIO2NDftZeynRE",
+     * "thumb_url": "www.qq.com/a.jpg"
+     * },
+     * {
+     * "card_id": "pXch-jnAN-ZBoRbiwgqBZ1RV60fI",
+     * "thumb_url": "www.qq.com/b.jpg"
+     * }
+     * ]
+     * }
+     * 参数说明：
+     *
+     * 字段	说明	是否必填
+     * banner	页面的banner图片链接，须调用，建议尺寸为640*300。	是
+     * title	页面的title。	是
+     * can_share	页面是否可以分享,填入true/false	是
+     * scene	投放页面的场景值；
+     * SCENE_NEAR_BY 附近 SCENE_MENU	自定义菜单 SCENE_QRCODE	二维码 SCENE_ARTICLE	公众号文章 SCENE_H5	h5页面 SCENE_IVR	自动回复 SCENE_CARD_CUSTOM_CELL	卡券自定义cell
+     *
+     * 是
+     * cardlist	卡券列表，每个item有两个字段	是
+     * cardid	所要在页面投放的cardid	是
+     * thumb_url	缩略图url	是
+     * 返回数据说明
+     *
+     * {
+     * "errcode":0,
+     * "errmsg":"ok",
+     * "url":"www.test.url",
+     * "page_id":1
+     * }
+     * 字段说明：
+     *
+     * 字段	说明
+     * errcode	错误码，0为正常。
+     * errmsg	错误信息。
+     * url	货架链接。
+     * page_id	货架ID。货架的唯一标识。
+     */
+    public function landingpageCreate($banner, $title, $can_share, $scene, array $cardlist)
+    {
+        $params = array();
+        $params['banner'] = $banner;
+        $params['title'] = $title;
+        $params['can_share'] = $can_share;
+        $params['scene'] = $scene;
+        $params['cardlist'] = $cardlist;
+        $access_token = $this->weixin->getToken();
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $rst = $this->weixin->post($this->_url . 'landingpage/create?access_token=' . $access_token, $json);
+        
+        if (! empty($rst['errcode'])) {
+            throw new WeixinException($rst['errmsg'], $rst['errcode']);
+        } else {
+            return $rst;
+        }
+    }
 }
