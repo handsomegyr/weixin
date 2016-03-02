@@ -227,7 +227,9 @@ class WeixinOAuthRequest
     {
         switch ($method) {
             case 'GET':
-                $url = $url . '?' . http_build_query($parameters);
+                if ($parameters) {
+                    $url .= '?' . http_build_query($parameters);
+                }
                 return $this->http($url, 'GET');
             default:
                 $headers = array();
