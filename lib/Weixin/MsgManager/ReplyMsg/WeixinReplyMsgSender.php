@@ -27,6 +27,7 @@ class WeixinReplyMsgSender
 {
 
     protected $weixinMsgManager;
+    protected $_length = 0;
 
     /**
      *
