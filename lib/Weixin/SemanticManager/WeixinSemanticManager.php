@@ -44,7 +44,7 @@ class WeixinSemanticManager
      * }
      * 参数说明
      *
-     * 参数	是否必须	参数类型	说明
+     * 参数 是否必须 参数类型 说明
      * access_token 是 String 根据appid和appsecret获取到的token
      * query 是 String 输入文本串
      * category 是 String 需要使用的服务类型，多个用“，”隔开，不能为空
@@ -87,7 +87,7 @@ class WeixinSemanticManager
      * }
      * 返回参数说明
      *
-     * 参数	是否必须	参数类型	说明
+     * 参数 是否必须 参数类型 说明
      * errcode 是 Int 表示请求后的状态
      * query 是 String 用户的输入字符串
      * type 是 String 服务的全局类型id，详见协议文档中垂直服务协议定义
@@ -104,13 +104,18 @@ class WeixinSemanticManager
         $params = array(
             "query" => $query,
             "category" => $category,
-            "latitude" => $latitude,
-            "longitude" => $longitude,
-            "city" => $city,
-            "region" => $region,
             "appid" => $appid,
             "uid" => $uid
         );
+        if (! empty($city)) {
+            $params["city"] = $city;
+        } else {
+            $params["latitude"] = $latitude;
+            $params["longitude"] = $longitude;
+        }
+        if (! empty($region)) {
+            $params["region"] = $region;
+        }
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
         $rst = $this->weixin->post($this->_url . 'semproxy/search?access_token=' . $access_token, $json);
         
