@@ -18,6 +18,7 @@ use Weixin\IpManager\WeixinIpManager;
 use Weixin\JssdkManager\WeixinJssdkManager;
 use Weixin\DatacubeManager\WeixinDatacubeManager;
 use Weixin\PoiManager\WeixinPoiManager;
+use Weixin\MaterialManager\WeixinMaterialManager;
 
 /**
  * 微信公众平台的调用接口类.
@@ -227,6 +228,18 @@ class WeixinClient
         return $this->weixinPoiManager;
     }
 
+    protected $weixinMaterialManager;
+
+    /**
+     * GET WeixinMaterialManager object.
+     *
+     * @return WeixinMaterialManager
+     */
+    public function WeixinMaterialManager()
+    {
+        return $this->weixinMaterialManager;
+    }
+
     public function __construct($appid, $secret, $access_token = NULL, $refresh_token = NULL, $options = array())
     {
         $this->_appid = $appid;
@@ -266,6 +279,8 @@ class WeixinClient
         $this->weixinDatacubeManager = new WeixinDatacubeManager($this, $options);
         // POI门店管理管理
         $this->weixinPoiManager = new WeixinPoiManager($this, $options);
+        // 素材管理
+        $this->weixinMaterialManager = new WeixinMaterialManager($this, $options);
     }
 
     /**

@@ -19,7 +19,7 @@ use Weixin\WeixinClient;
  * @author guoyongrong <handsomegyr@gmail.com>
  *        
  */
-class WeixinMediaManager
+class WeixinMaterialManager
 {
 
     protected $weixin;
