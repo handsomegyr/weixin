@@ -218,7 +218,7 @@ class WeixinTemplateMsgSender
         $params = array();
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
         $access_token = $this->weixinMsgManager->getWeixin()->getToken();
-        $rst = $this->weixinMsgManager->getWeixin()->post($this->_url . 'template/get_industry?access_token=' . $access_token, $json);
+        $rst = $this->weixinMsgManager->getWeixin()->get($this->_url . 'template/get_industry?access_token=' . $access_token, $json);
         // 返回结果
         if (! empty($rst['errcode'])) {
             throw new WeixinException($rst['errmsg'], $rst['errcode']);
@@ -315,7 +315,7 @@ class WeixinTemplateMsgSender
         $params = array();
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
         $access_token = $this->weixinMsgManager->getWeixin()->getToken();
-        $rst = $this->weixinMsgManager->getWeixin()->post($this->_url . 'template/get_all_private_template?access_token=' . $access_token, $json);
+        $rst = $this->weixinMsgManager->getWeixin()->get($this->_url . 'template/get_all_private_template?access_token=' . $access_token, $json);
         // 返回结果
         if (! empty($rst['errcode'])) {
             throw new WeixinException($rst['errmsg'], $rst['errcode']);
