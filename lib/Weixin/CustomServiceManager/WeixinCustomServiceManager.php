@@ -429,7 +429,7 @@ class WeixinCustomServiceManager
         $params = array();
         $params['kf_account'] = $kf_account;
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
-        $rst = $this->weixin->post($this->_url2 . 'kfaccount/del?access_token=' . $access_token, $json);
+        $rst = $this->weixin->get($this->_url2 . 'kfaccount/del?access_token=' . $access_token, $json);
         
         if (! empty($rst['errcode'])) {
             throw new WeixinException($rst['errmsg'], $rst['errcode']);
