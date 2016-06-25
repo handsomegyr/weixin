@@ -48,7 +48,7 @@ class WeixinPoiManager
      * 1.2 接口调用请求说明
      * 协议 https
      * http 请求方式 POST/FORM
-     * 请求 Url https://file.api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=ACCESS_TOKEN
+     * 请求 Url https://api.weixin.qq.com/cgi-bin//media/uploadimg?access_token=ACCESS_TOKEN
      * POST 数据格式 buffer
      * 1.3 参数说明
      * 参数 是否必须 说明
@@ -77,7 +77,7 @@ class WeixinPoiManager
         $params = array();
         $params['access_token'] = $access_token;
         $params['buffer'] = '@' . $img;
-        $rst = $this->weixin->post('https://file.api.weixin.qq.com/cgi-bin/media/uploadimg', $params, true);
+        $rst = $this->weixin->post('https://api.weixin.qq.com/cgi-bin//media/uploadimg', $params, true);
         
         if (! empty($rst['errcode'])) {
             throw new WeixinException($rst['errmsg'], $rst['errcode']);
