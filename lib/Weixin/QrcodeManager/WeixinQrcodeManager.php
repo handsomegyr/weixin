@@ -78,7 +78,7 @@ class WeixinQrcodeManager
     {
         $params = array();
         if ($isTemporary) {
-            $params['expire_seconds'] = min($expire_seconds, 1800);
+            $params['expire_seconds'] = $expire_seconds;
             $params['action_name'] = "QR_SCENE";
             $params['action_info']['scene']['scene_id'] = $scene_id;
         } else {
@@ -98,8 +98,11 @@ class WeixinQrcodeManager
             throw new WeixinException($rst['errmsg'], $rst['errcode']);
         } else {
             // 返回说明
+            //ticket	       获取的二维码ticket，凭借此ticket可以在有效时间内换取二维码。
+            //expire_seconds   该二维码有效时间，以秒为单位。 最大不超过2592000（即30天）。
+            //url	           二维码图片解析后的地址，开发者可根据该地址自行生成需要的二维码图片
             // 正确的Json返回结果:
-            // {"ticket":"gQG28DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL0FuWC1DNmZuVEhvMVp4NDNMRnNRAAIEesLvUQMECAcAAA==","expire_seconds":1800}
+            // {"ticket":"gQH47joAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL2taZ2Z3TVRtNzJXV1Brb3ZhYmJJAAIEZ23sUwMEmm3sUw==","expire_seconds":60,"url":"http:\/\/weixin.qq.com\/q\/kZgfwMTm72WWPkovabbI"}
             return $rst;
         }
     }
@@ -115,6 +118,6 @@ class WeixinQrcodeManager
         // https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=TICKET
         // 返回说明
         // ticket正确情况下，http 返回码是200，是一张图片，可以直接展示或者下载。
-        return "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket={$ticket}";
+        return "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=" . urlencode($ticket);
     }
 }

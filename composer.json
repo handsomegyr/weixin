@@ -1,15 +1,20 @@
 {
-    "name": "weixin/weixin",
+    "name": "HessianZ/Weixin",
     "type": "library",
     "description": "A simple PHP client library for weixin",
-    "keywords": ["weixin"],
-    "homepage": "http://github.com/handsomegyr/weixin",
+    "keywords": ["weixin", "wechat", "sdk"],
+    "homepage": "http://github.com/HessianZ/weixin",
     "license": "MIT",
     "authors": [
         {
             "name": "guoyongrong",
             "email": "handsomegyr@gmail.com",
             "homepage": "http://www.cnblogs.com/guoyongrong/"
+        },
+        {
+            "name": "Hessian",
+            "email": "hess.4x@gmail.com",
+            "homepage": "http://hessian.cn"
         }
     ],
     "require": {

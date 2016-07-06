@@ -227,7 +227,9 @@ class WeixinOAuthRequest
     {
         switch ($method) {
             case 'GET':
-                $url = $url . '?' . http_build_query($parameters);
+                if ($parameters) {
+                    $url .= '?' . http_build_query($parameters);
+                }
                 return $this->http($url, 'GET');
             default:
                 $headers = array();
@@ -291,7 +293,7 @@ class WeixinOAuthRequest
         }
         // if (isset($this->access_token) && $this->access_token)
         // $headers[] = "Authorization: OAuth2 " . $this->access_token;
-        $headers[] = "API-RemoteIP: " . $_SERVER['REMOTE_ADDR'];
+        $headers[] = "API-RemoteIP: " . filter_input(INPUT_SERVER, 'REMOTE_ADDR', FILTER_SANITIZE_STRING);
         curl_setopt($ci, CURLOPT_URL, $url);
         curl_setopt($ci, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ci, CURLINFO_HEADER_OUT, TRUE);
